@@ -13,15 +13,19 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
     <script>
+        // จองพื้นที่ให้ Object app ทันทีเพื่อให้ปุ่ม onclick ทำงานได้โดยไม่เกิด Error
+        window.app = window.app || {};
+    </script>
+    <script>
         tailwind.config = {
             theme: { extend: { colors: { primary: '#7c2d12', secondary: '#b45309', } } }
         }
     </script>
 </head>
-<body class="bg-gray-100 text-gray-800 h-screen overflow-hidden flex relative">
+<body class="bg-gray-100 text-gray-800 min-h-screen overflow-x-hidden flex relative">
 
     <!-- Sidebar / เมนูนำทาง -->
-    <aside class="w-20 md:w-64 bg-primary text-white flex flex-col transition-all duration-300 flex-shrink-0 z-30">
+    <aside class="w-20 md:w-64 bg-primary text-white flex flex-col transition-all duration-300 flex-shrink-0 z-30 overflow-y-auto">
         <div class="p-4 flex items-center justify-center md:justify-start gap-3 border-b border-orange-900/50">
             <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary font-bold text-xl flex-shrink-0 shadow-lg">
                 <i class="fa-solid fa-bowl-food"></i>
@@ -151,15 +155,15 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+    <main class="flex-1 flex flex-col w-full min-h-screen overflow-x-hidden relative">
         
         <!-- Header -->
-        <header class="bg-white shadow-sm p-4 flex justify-between items-center z-10 flex-shrink-0">
-            <h2 id="page-title" class="text-xl font-bold text-gray-800">จุดรับออร์เดอร์ (POS)</h2>
-            <div class="text-gray-500 text-sm md:text-base" id="current-time">
+        <header class="bg-white shadow-sm px-3 sm:px-4 py-2 sm:py-4 flex justify-between items-center z-10 flex-shrink-0">
+            <h2 id="page-title" class="text-lg sm:text-xl font-bold text-gray-800 truncate">จุดรับออร์เดอร์ (POS)</h2>
+            <div class="text-gray-500 text-xs sm:text-sm md:text-base whitespace-nowrap ml-2" id="current-time">
                 <!-- เวลาจะแสดงที่นี่ -->
             </div>
         </header>
 
         <!-- Container สำหรับแต่ละหน้า -->
-        <div id="content-container" class="flex-1 overflow-hidden relative">
+        <div id="content-container" class="flex-1 relative w-full h-full overflow-hidden bg-gray-100">

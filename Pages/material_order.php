@@ -116,6 +116,9 @@ $all_materials = $stmt_all_mat->fetchAll();
 </div>
 
 <script>
+    // Ensure the app namespace exists
+    window.app = window.app || {};
+
     window.materialOptionsHTML = `
         <option value="">-- เลือกวัตถุดิบ --</option>
         <?php foreach($all_materials as $mat): ?>

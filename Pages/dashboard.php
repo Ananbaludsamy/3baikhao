@@ -1,5 +1,5 @@
 <!-- ================= หน้า 2: Dashboard (รายงาน) ================= -->
-<div id="page-dashboard" class="absolute inset-0 p-4 lg:p-8 overflow-y-auto hidden opacity-0 transition-opacity duration-300">
+<div id="page-dashboard" class="absolute inset-0 px-2 sm:p-4 lg:p-8 overflow-y-auto hidden opacity-0 transition-opacity duration-300 w-full h-full">
     <?php if ($_SESSION['Role'] == 'admin'): ?>
     <!-- แถวตัวเลขสรุป (KPIs) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
@@ -139,6 +139,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    // Ensure the app namespace exists
+    window.app = window.app || {};
+
     // ตรวจสอบ Role ก่อนรัน Script ของ Admin เพื่อไม่ให้เกิด Error
     document.addEventListener('DOMContentLoaded', function() {
         const userRole = '<?php echo $_SESSION['Role']; ?>';
@@ -166,6 +169,7 @@
         try {
             const response = await fetch('actions/get_pending_orders.php');
             const result = await response.json();
+            console.log("Pending Orders Data:", result); // ตรวจสอบข้อมูลใน Console (F12)
 
             // อัปเดตตัวเลขจำนวนรายการรอเสิร์ฟในส่วนหัว (ถ้ามี element นี้)
             const pendingCountEl = document.getElementById('staff-pending-count');

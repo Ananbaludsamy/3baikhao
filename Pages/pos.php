@@ -1,21 +1,21 @@
 <!-- ================= หน้า 1: POS (การขาย) ================= -->
-<div id="page-pos" class="absolute inset-0 flex flex-col lg:flex-row transition-opacity duration-300">
-    <div class="flex-1 p-4 overflow-y-auto no-scrollbar pb-24 lg:pb-4 flex flex-col">
+<div id="page-pos" class="absolute inset-0 flex flex-col lg:flex-row transition-opacity duration-300 w-full h-full lg:pr-96 overflow-hidden">
+    <div class="flex-1 px-2 sm:px-4 py-3 overflow-y-auto no-scrollbar pb-24 lg:pb-4 flex flex-col w-full">
         <div class="flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar flex-shrink-0">
             <button onclick="app.setFilter('all')" id="filter-all"
-                class="filter-btn px-4 py-2 bg-primary text-white rounded-full whitespace-nowrap shadow">ทั้งหมด</button>
+                class="filter-btn px-3 sm:px-4 py-2 bg-primary text-white rounded-full whitespace-nowrap shadow text-xs sm:text-sm">ทั้งหมด</button>
             <?php foreach ($categories as $cat): ?>
                 <button onclick="app.setFilter('<?php echo $cat['ProductType_id']; ?>')"
                     id="filter-<?php echo $cat['ProductType_id']; ?>"
-                    class="filter-btn px-4 py-2 bg-white text-gray-600 hover:bg-gray-200 rounded-full whitespace-nowrap shadow-sm border border-gray-200">
+                    class="filter-btn px-3 sm:px-4 py-2 bg-white text-gray-600 hover:bg-gray-200 rounded-full whitespace-nowrap shadow-sm border border-gray-200 text-xs sm:text-sm">
                     <?php echo htmlspecialchars($cat['ProductType_name']); ?>
                 </button>
             <?php endforeach; ?>
         </div>
-        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 pb-10"></div>
+        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 pb-10 w-full"></div>
     </div>
 
-    <div class="w-full lg:w-96 bg-white shadow-2xl lg:shadow-lg border-l border-gray-200 flex flex-col h-[60vh] lg:h-full z-20 absolute lg:relative bottom-0 lg:bottom-auto rounded-t-3xl lg:rounded-none transition-transform duration-300 transform translate-y-[calc(100%-60px)] lg:translate-y-0"
+    <div class="w-full lg:w-96 bg-white shadow-2xl lg:shadow-lg border-l border-gray-200 flex flex-col h-[60vh] lg:h-full z-20 absolute lg:fixed bottom-0 lg:bottom-auto lg:right-0 lg:top-0 rounded-t-3xl lg:rounded-none transition-transform duration-300 transform translate-y-[calc(100%-60px)] lg:translate-y-0"
         id="mobile-cart-panel">
         <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 lg:bg-white rounded-t-3xl lg:rounded-none cursor-pointer lg:cursor-auto shadow-sm lg:shadow-none"
             onclick="app.toggleMobileCart()">

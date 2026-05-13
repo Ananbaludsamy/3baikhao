@@ -28,7 +28,8 @@ $mat_types = $stmt_mat_type->fetchAll();
     // ส่งข้อมูลจาก PHP ไปยัง JavaScript
     window.serverData = {
         products: <?php echo json_encode($products); ?>,
-        categories: <?php echo json_encode($categories); ?>
+        categories: <?php echo json_encode($categories); ?>,
+        user: { id: <?php echo $_SESSION['Emp_id']; ?>, name: '<?php echo $_SESSION['Emp_name']; ?>', role: '<?php echo $_SESSION['Role']; ?>' }
     };
 </script>
 

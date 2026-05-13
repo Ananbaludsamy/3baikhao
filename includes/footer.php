@@ -21,7 +21,7 @@
             materials: [] // เพิ่มตัวแปรเก็บข้อมูลวัตถุดิบทั้งหมด
         };
 
-        const app = {
+        const mainFunctions = {
             init: function() {
                 this.loadDatabase();
                 this.updateTime();
@@ -111,18 +111,18 @@
                 
                 filteredProducts.forEach(product => {
                     const el = document.createElement('div');
-                    el.className = 'bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden cursor-pointer border border-gray-100 flex flex-col group';
+                    el.className = 'bg-white rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden cursor-pointer border border-gray-100 flex flex-col group';
                     el.onclick = () => this.addToCart(product.id);
                     el.innerHTML = `
-                        <div class="h-28 sm:h-32 bg-gray-200 overflow-hidden relative">
+                        <div class="h-20 sm:h-24 md:h-28 bg-gray-200 overflow-hidden relative">
                             <img src="${product.img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=300&q=80'">
                         </div>
-                        <div class="p-3 flex flex-col flex-1">
-                            <h4 class="font-medium text-xs sm:text-sm text-gray-800 leading-tight mb-2 flex-1">${product.name}</h4>
-                            <div class="flex justify-between items-center mt-auto">
-                                <span class="text-primary font-bold text-sm sm:text-base">₭${this.formatCurrency(product.price)}</span>
-                                <button class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-orange-100 text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center justify-center">
-                                    <i class="fa-solid fa-plus text-xs"></i>
+                        <div class="p-2 sm:p-3 flex flex-col flex-1">
+                            <h4 class="font-medium text-[10px] sm:text-xs md:text-sm text-gray-800 leading-tight mb-1 flex-1">${product.name}</h4>
+                            <div class="flex justify-between items-center mt-auto gap-1">
+                                <span class="text-primary font-bold text-xs sm:text-sm">₭${this.formatCurrency(product.price)}</span>
+                                <button class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-orange-100 text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-plus text-[8px] sm:text-xs"></i>
                                 </button>
                             </div>
                         </div>
@@ -241,8 +241,8 @@
                 const postData = {
                     cart: state.cart,
                     total: totalAmount,
-                    cus_id: 1, // สมมติลูกค้าทั่วไป
-                    emp_id: 1  // สมมติพนักงานคนแรก
+                    cus_id: 1, // TODO: พัฒนาระบบเลือกลูกค้าในหน้า POS
+                    emp_id: window.serverData.user.id
                 };
 
                 // ส่งข้อมูลด้วย fetch ไปที่ save_sale.php
@@ -269,11 +269,14 @@
                         this.saveOrdersToStorage(); // เก็บประวัติไว้ในเครื่องด้วยเพื่อความเร็ว
 
                         state.cart = [];
-                        this.renderCart();
-                        this.updateDashboard(); // อัปเดตสถิติ (ถ้าเป็น Admin)
-                        if (typeof this.updateStaffDashboard === 'function') {
-                            this.updateStaffDashboard(); // อัปเดตรายการรอเสิร์ฟทันที
+                        if (typeof this.renderCart === 'function') this.renderCart();
+                        
+                        // เรียกใช้ผ่าน window.app เพื่อให้มั่นใจว่าเรียกฟังก์ชันที่ถูกรวมแล้ว
+                        if (typeof window.app.updateStaffDashboard === 'function') {
+                            window.app.updateStaffDashboard();
                         }
+                        
+                        this.updateDashboard(); // อัปเดตสถิติ (ถ้าเป็น Admin)
                         if(state.isMobileCartOpen) this.toggleMobileCart();
                         this.showToast(`ชำระเงินสำเร็จ! รหัสบิล: ${result.order_id}`);
                         
@@ -507,6 +510,7 @@
 
             renderMenuMgmt: function() {
                 const tbody = document.getElementById('menu-mgmt-table');
+                if (!tbody) return; // ป้องกัน Error หากไม่มีตารางในหน้านี้ (เช่น เมื่อ Staff ล็อกอิน)
                 tbody.innerHTML = '';
                 if (state.products.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400">ไม่มีเมนูในระบบ</td></tr>';
@@ -1272,8 +1276,9 @@
             }
         };
 
-        window.app = app;
-        window.addEventListener('DOMContentLoaded', () => app.init());
+        // ใช้ Object.assign เพื่อรวมฟังก์ชันจากไฟล์อื่นๆ เข้ากับตัวแปรหลัก โดยไม่ลบฟังก์ชันเดิมทิ้ง
+        window.app = Object.assign(window.app || {}, mainFunctions);
+        window.addEventListener('DOMContentLoaded', () => window.app.init());
     </script>
 </body>
 </html>
