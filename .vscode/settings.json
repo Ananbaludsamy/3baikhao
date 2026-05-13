@@ -1,0 +1,7 @@
+{
+    "color-highlight.rgbWithNoFunctionLanguages": [
+        
+        "*"
+    ],
+    "github.copilot.chat.alternateGeminiModelFPrompt.enabled": false
+}
