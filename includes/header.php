@@ -138,20 +138,13 @@
                 </li>
                 <?php endif; ?>
 
-                <!-- เมนูออกจากระบบ (ให้มีทั้งคู่) -->
-                <li>
-                    <a href="logout.php" class="w-full flex items-center p-3 rounded-lg hover:bg-red-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-right-from-bracket w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">ออกจากระบบ</span>
-                    </a>
-                </li>
             </ul>
         </nav>
         
-        <div class="p-4 border-t border-orange-900/50 text-center md:text-left text-sm text-orange-300">
-            <i class="fa-solid fa-database md:mr-2"></i>
-            <span class="hidden md:inline text-xs">Local Offline Mode</span>
-        </div>
+        <a href="logout.php" class="p-4 border-t border-orange-900/50 text-orange-200 hover:bg-red-800 hover:text-white transition-all flex items-center justify-center md:justify-start gap-3">
+            <i class="fa-solid fa-right-from-bracket text-xl w-6 text-center"></i>
+            <span class="hidden md:block font-bold text-sm">ออกจากระบบ</span>
+        </a>
     </aside>
 
     <!-- Main Content -->
