@@ -337,6 +337,9 @@
                         const change = received - totalAmount;
                         window.open(`print_receipt.php?id=${result.sale_id}&cash=${received}&change=${change}&table=${tableNo}`, '_blank', 'width=400,height=600');
 
+                        // เปลี่ยนหน้าไปยังหน้า รายการอาหารรอเสิร์ฟ (Dashboard) ทันที
+                        window.app.switchPage('dashboard');
+
                         setTimeout(() => {
                             checkoutBtn.disabled = false;
                             checkoutBtn.innerHTML = originalText;
