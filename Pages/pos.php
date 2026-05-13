@@ -34,6 +34,14 @@
                 <span>ยอดรวม (<span id="cart-total-qty">0</span> รายการ)</span>
                 <span><span id="cart-subtotal">0</span> ₭</span>
             </div>
+            <!-- ส่วนเลือกหมายเลขโต๊ะแบบปุ่ม -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">เลือกโต๊ะ (Select Table)</label>
+                <div id="table-grid" class="grid grid-cols-5 gap-2 max-h-32 overflow-y-auto no-scrollbar p-1 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                    <!-- ปุ่มโต๊ะจะถูกสร้างโดย JavaScript -->
+                </div>
+                <input type="hidden" id="table-number" value="">
+            </div>
             <div class="mb-3">
                 <div class="flex justify-between mb-1 text-gray-700 font-medium">
                     <span>เงินรับ (Cash)</span>

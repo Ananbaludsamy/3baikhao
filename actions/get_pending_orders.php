@@ -5,7 +5,7 @@ require_once '../includes/db_connect.php';
 try {
     // SQL Query สำหรับดึงรายการบิลที่รอเสิร์ฟ
     // เราจะดึงข้อมูลหัวบิล JOIN กับข้อมูลลูกค้า และรายละเอียดสินค้า JOIN กับชื่อสินค้า
-    $sql = "SELECT h.Sale_id, h.Sale_date, c.Cus_name, d.Sale_total, p.Product_name 
+    $sql = "SELECT h.Sale_id, h.Sale_date, h.Table_no, c.Cus_name, d.Sale_total, p.Product_name 
             FROM saleh_db h
             LEFT JOIN customer_db c ON h.Cus_id = c.Cus_id
             JOIN saled_db d ON h.Sale_id = d.Sale_id
@@ -24,6 +24,7 @@ try {
             $orders[$id] = [
                 'order_id' => 'ORD-' . str_pad($id, 5, '0', STR_PAD_LEFT),
                 'sale_id' => $id,
+                'table_no' => $row['Table_no'] ?? '-',
                 'customer' => $row['Cus_name'] ?? 'ลูกค้าทั่วไป',
                 // ตรวจสอบวันที่และเวลา หากไม่มีเวลาให้แสดงเป็น --:-- หรือเวลาปัจจุบันที่บันทึก
                 'time' => (strtotime($row['Sale_date']) > 0) ? date('H:i', strtotime($row['Sale_date'])) : '--:--',

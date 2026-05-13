@@ -1,4 +1,5 @@
 <?php
+error_reporting(0); // ปิดการแสดงผล Error เพื่อไม่ให้ JSON พัง
 header('Content-Type: application/json');
 session_start();
 require_once '../includes/db_connect.php';
@@ -17,6 +18,20 @@ if (!$conn) {
 }
 
 try {
+    $table_no = $data['table_no'] ?? '-';
+    $status = 'ชำระเงินแล้ว';
+
+    // 0. ตรวจสอบว่าโต๊ะนี้มีออเดอร์ที่ยังไม่ได้เสิร์ฟค้างอยู่หรือไม่ (ป้องกันเลขโต๊ะซ้ำ)
+    // เราจะเช็คเฉพาะกรณีที่ระบุหมายเลขโต๊ะมา (ไม่ใช่ '-')
+    if ($table_no !== '-') {
+        $stmt_check = $conn->prepare("SELECT COUNT(*) FROM saleh_db WHERE Table_no = ? AND TRIM(Sale_status) = ?");
+        $stmt_check->execute([$table_no, $status]);
+        if ($stmt_check->fetchColumn() > 0) {
+            echo json_encode(['success' => false, 'message' => "โต๊ะหมายเลข $table_no มีออเดอร์ค้างอยู่ในระบบ กรุณาเสิร์ฟรายการเดิมให้เรียบร้อยก่อน"]);
+            exit;
+        }
+    }
+
     // เริ่มต้น Transaction เพื่อป้องกันข้อมูลบันทึกไม่ครบ
     $conn->beginTransaction();
 
@@ -25,10 +40,9 @@ try {
     $cus_id = $data['cus_id'] ?? 1;
     $emp_id = $_SESSION['Emp_id'] ?? 1; // ดึงรหัสพนักงานจาก Session
     $total = $data['total'];
-    $status = 'ชำระเงินแล้ว';
 
-    $stmt_h = $conn->prepare("INSERT INTO saleh_db (Sale_date, Cus_id, Emp_id, Sale_sumprice, Sale_status) VALUES (?, ?, ?, ?, ?)");
-    $stmt_h->execute([$sale_date, $cus_id, $emp_id, $total, $status]);
+    $stmt_h = $conn->prepare("INSERT INTO saleh_db (Sale_date, Cus_id, Emp_id, Sale_sumprice, Sale_status, Table_no) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt_h->execute([$sale_date, $cus_id, $emp_id, $total, $status, $table_no]);
     $sale_id = $conn->lastInsertId();
 
     // 2. บันทึกข้อมูลลง saled_db (รายละเอียดสินค้าในบิล)

@@ -8,6 +8,7 @@ if (!isset($_GET['id'])) {
 $sale_id = $_GET['id'];
 $cash_received = $_GET['cash'] ?? 0;
 $cash_change = $_GET['change'] ?? 0;
+$table_no = $_GET['table'] ?? '-';
 
 try {
     // ดึงข้อมูลหัวบิล
@@ -58,6 +59,7 @@ try {
         <div>บิลเลขที่: ORD-<?php echo str_pad($sale['Sale_id'], 5, '0', STR_PAD_LEFT); ?></div>
         <div>วันที่: <?php echo date('d/m/Y', strtotime($sale['Sale_date'])); ?></div>
         <div>ผู้ขาย: <?php echo $sale['Emp_name']; ?></div>
+        <div style="font-size: 18px; margin-top: 5px;">หมายเลขโต๊ะ: <span style="text-decoration: underline;"><?php echo htmlspecialchars($table_no); ?></span></div>
     </div>
     
     <div class="line"></div>

@@ -189,9 +189,15 @@
             container.innerHTML = result.data.map(order => `
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between hover:shadow-md transition-shadow">
                     <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="bg-blue-50 text-blue-600 text-xs font-black px-2.5 py-1 rounded-lg">${order.order_id}</span>
-                            <span class="text-xs text-gray-400 font-medium"><i class="fa-regular fa-clock mr-1"></i> ${order.time}</span>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex flex-col">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-2 py-0.5 rounded-md mb-1 w-fit">${order.order_id}</span>
+                                <span class="text-[10px] text-gray-400 font-medium"><i class="fa-regular fa-clock mr-1"></i> ${order.time}</span>
+                            </div>
+                            <div class="bg-gradient-to-br from-orange-400 to-orange-600 text-white px-4 py-2 rounded-xl shadow-md border border-orange-700 text-center min-w-[80px]">
+                                <p class="text-[10px] font-bold uppercase leading-none mb-1 opacity-80">โต๊ะ</p>
+                                <p class="text-3xl font-black leading-none">${order.table_no}</p>
+                            </div>
                         </div>
                         <h4 class="font-bold text-gray-800 mb-3 flex items-center">
                             <i class="fa-solid fa-circle-user text-gray-300 mr-2 text-lg"></i> ${order.customer}

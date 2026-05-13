@@ -26,7 +26,9 @@
                 this.loadDatabase();
                 this.updateTime();
                 this.loadMaterials(); // โหลดข้อมูลวัตถุดิบเริ่มต้น
+                this.renderTableSelection(); // สร้างปุ่มเลือกโต๊ะ
                 setInterval(() => this.updateTime(), 1000);
+                setInterval(() => this.renderTableSelection(), 10000); // อัปเดตสถานะโต๊ะทุก 10 วินาที
             },
 
             formatCurrency: function(amount) {
@@ -198,6 +200,43 @@
                 this.calculateChange(); // คำนวณเงินทอนใหม่ทุกครั้งที่ตะกร้าเปลี่ยน
             },
 
+            renderTableSelection: async function() {
+                const grid = document.getElementById('table-grid');
+                if (!grid) return;
+
+                try {
+                    const response = await fetch('actions/get_pending_orders.php');
+                    const result = await response.json();
+                    const occupiedTables = result.success ? result.data.map(o => o.table_no.toString().trim()) : [];
+                    const currentSelected = document.getElementById('table-number').value;
+
+                    grid.innerHTML = '';
+                    // สมมติว่าร้านมี 20 โต๊ะ (สามารถปรับตัวเลขได้ตามจริง)
+                    for (let i = 1; i <= 20; i++) {
+                        const tableNo = i.toString();
+                        const isOccupied = occupiedTables.includes(tableNo);
+                        const isSelected = currentSelected === tableNo;
+
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.onclick = () => isOccupied ? this.showToast('โต๊ะนี้มีออเดอร์ค้างอยู่', 'error') : this.selectTable(tableNo);
+
+                        let bgColor = 'bg-white border-gray-200 text-gray-600 hover:bg-orange-50';
+                        if (isOccupied) bgColor = 'bg-red-100 border-red-200 text-red-500 cursor-not-allowed';
+                        if (isSelected) bgColor = 'bg-primary border-primary text-white shadow-md scale-95';
+
+                        btn.className = `${bgColor} border p-2 rounded-lg text-sm font-bold transition-all flex flex-col items-center justify-center h-12`;
+                        btn.innerHTML = `<span class="leading-none">${tableNo}</span><span class="text-[8px] uppercase mt-1">${isOccupied ? 'ไม่ว่าง' : 'ว่าง'}</span>`;
+                        grid.appendChild(btn);
+                    }
+                } catch (err) { console.error('Table status error:', err); }
+            },
+
+            selectTable: function(no) {
+                document.getElementById('table-number').value = no;
+                this.renderTableSelection();
+            },
+
             setQuickCash: function(amount) {
                 document.getElementById('cash-received').value = amount;
                 this.calculateChange();
@@ -224,9 +263,17 @@
 
                 const totalAmount = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
                 const received = parseFloat(document.getElementById('cash-received').value) || 0;
+                const tableNo = document.getElementById('table-number').value.trim();
+
+                // ตรวจสอบหมายเลขโต๊ะก่อนชำระเงิน
+                if (!tableNo) {
+                    window.app.showToast('กรุณาระบุหมายเลขโต๊ะก่อนชำระเงิน', 'error');
+                    document.getElementById('table-number').focus();
+                    return;
+                }
 
                 if (received < totalAmount) {
-                    this.showToast('ยอดเงินรับไม่เพียงพอ', 'error');
+                    window.app.showToast('ยอดเงินรับไม่เพียงพอ', 'error');
                     return;
                 }
 
@@ -242,7 +289,8 @@
                     cart: state.cart,
                     total: totalAmount,
                     cus_id: 1, // TODO: พัฒนาระบบเลือกลูกค้าในหน้า POS
-                    emp_id: window.serverData.user.id
+                    emp_id: window.serverData.user.id,
+                    table_no: tableNo
                 };
 
                 // ส่งข้อมูลด้วย fetch ไปที่ save_sale.php
@@ -266,38 +314,42 @@
                         };
 
                         state.orders.unshift(orderData); 
-                        this.saveOrdersToStorage(); // เก็บประวัติไว้ในเครื่องด้วยเพื่อความเร็ว
+                        window.app.saveOrdersToStorage(); // เก็บประวัติไว้ในเครื่องด้วยเพื่อความเร็ว
 
                         state.cart = [];
-                        if (typeof this.renderCart === 'function') this.renderCart();
+                        window.app.renderCart();
+                        
+                        // ล้างค่าเงินรับและเลขโต๊ะ
+                        document.getElementById('cash-received').value = '';
+                        document.getElementById('table-number').value = '';
+                        window.app.renderTableSelection();
                         
                         // เรียกใช้ผ่าน window.app เพื่อให้มั่นใจว่าเรียกฟังก์ชันที่ถูกรวมแล้ว
                         if (typeof window.app.updateStaffDashboard === 'function') {
                             window.app.updateStaffDashboard();
                         }
                         
-                        this.updateDashboard(); // อัปเดตสถิติ (ถ้าเป็น Admin)
-                        if(state.isMobileCartOpen) this.toggleMobileCart();
-                        this.showToast(`ชำระเงินสำเร็จ! รหัสบิล: ${result.order_id}`);
+                        window.app.updateDashboard(); // อัปเดตสถิติ (ถ้าเป็น Admin)
+                        if(state.isMobileCartOpen) window.app.toggleMobileCart();
+                        window.app.showToast(`ชำระเงินสำเร็จ! รหัสบิล: ${result.order_id}`);
                         
                         // เปิดหน้าพิมพ์ใบเสร็จอัตโนมัติ
                         const change = received - totalAmount;
-                        window.open(`print_receipt.php?id=${result.sale_id}&cash=${received}&change=${change}`, '_blank', 'width=400,height=600');
+                        window.open(`print_receipt.php?id=${result.sale_id}&cash=${received}&change=${change}&table=${tableNo}`, '_blank', 'width=400,height=600');
 
-                        // รีเฟรชหน้าจอหลังจาก 1.5 วินาที (เพื่อให้ User เห็น Toast แจ้งเตือนก่อน)
-                        // การรีเฟรชจะช่วยล้างสถานะที่อาจค้างอยู่ในหน่วยความจำและโหลดข้อมูลใหม่จาก DB
                         setTimeout(() => {
-                            location.reload();
-                        }, 1500);
+                            checkoutBtn.disabled = false;
+                            checkoutBtn.innerHTML = originalText;
+                        }, 2000);
                     } else {
-                        this.showToast(result.message || 'บันทึกข้อมูลไม่สำเร็จ', 'error');
+                        window.app.showToast(result.message || 'บันทึกข้อมูลไม่สำเร็จ', 'error');
                         checkoutBtn.disabled = false;
                         checkoutBtn.innerHTML = originalText;
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    this.showToast('ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
+                    window.app.showToast('ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
                     checkoutBtn.disabled = false;
                     checkoutBtn.innerHTML = originalText;
                 });
