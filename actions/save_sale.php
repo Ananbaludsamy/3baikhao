@@ -37,7 +37,7 @@ try {
 
     // 1. บันทึกข้อมูลลง saleh_db (ส่วนหัวบิล)
     $sale_date = date('Y-m-d H:i:s');
-    $cus_id = $data['cus_id'] ?? 1;
+    $cus_id = $data['cus_id']; // รับ ID ลูกค้าที่เลือกจริงมาจาก POS
     $emp_id = $_SESSION['Emp_id'] ?? 1; // ดึงรหัสพนักงานจาก Session
     $total = $data['total'];
 
@@ -51,6 +51,13 @@ try {
     foreach ($data['cart'] as $item) {
         $line_total = $item['price'] * $item['qty'];
         $stmt_d->execute([$sale_id, $item['id'], $item['qty'], $item['price'], $line_total]);
+    }
+
+    // 3. ระบบสะสมแต้ม: ทุก 10,000 กีบ ได้ 1 คะแนน (เฉพาะลูกค้าที่ไม่ใช่ "ลูกค้าทั่วไป")
+    if ($cus_id > 1) {
+        $earned_points = floor($total / 10000);
+        $stmt_points = $conn->prepare("UPDATE customer_db SET Cus_Points = Cus_Points + ? WHERE Cus_id = ?");
+        $stmt_points->execute([$earned_points, $cus_id]);
     }
 
     // ยืนยันการบันทึกทั้งหมด

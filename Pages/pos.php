@@ -20,7 +20,7 @@
         <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 lg:bg-white rounded-t-3xl lg:rounded-none cursor-pointer lg:cursor-auto shadow-sm lg:shadow-none"
             onclick="app.toggleMobileCart()">
             <h3 class="font-bold text-lg text-primary flex items-center">
-                <i class="fa-solid fa-clipboard-list mr-2"></i> บิลปัจจุบัน
+                <i class="fa-solid fa-clipboard-list mr-2"></i> ບິນປັດຈຸບັນ
             </h3>
             <div class="flex items-center gap-2">
                 <span id="cart-count-badge"
@@ -33,6 +33,25 @@
             <div class="flex justify-between mb-2 text-gray-600 text-sm md:text-base">
                 <span>ยอดรวม (<span id="cart-total-qty">0</span> รายการ)</span>
                 <span><span id="cart-subtotal">0</span> ₭</span>
+            </div>
+            <!-- ส่วนเลือกสมาชิก/ลูกค้าพิเศษ (Searchable Select) -->
+            <div class="mb-3">
+                <label class="block text-sm font-bold text-gray-700 mb-1">สมาชิก (Member)</label>
+                <div class="relative">
+                    <input type="text" id="customer-search-input" oninput="app.filterCustomers(this.value)" 
+                        class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-primary bg-white text-sm" 
+                        placeholder="ค้นหาชื่อหรือเบอร์โทรลูกค้า"
+                        onfocus="app.renderCustomerSearch(); document.getElementById('customer-search-results').classList.remove('hidden')"
+                        onblur="setTimeout(() => document.getElementById('customer-search-results').classList.add('hidden'), 200)">
+                    <div id="customer-search-results" 
+                        class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
+                    </div>
+                </div>
+                <!-- Hidden input สำหรับเก็บรหัสลูกค้าที่เลือก -->
+                <input type="hidden" id="pos-customer-select-id" value="1">
+                <div id="member-discount-info" class="text-[10px] text-green-600 font-bold mt-1 hidden">
+                    <i class="fa-solid fa-star"></i> สิทธิพิเศษ: ส่วนลด <span id="member-discount-rate">0</span>%
+                </div>
             </div>
             <!-- ส่วนเลือกหมายเลขโต๊ะแบบปุ่ม -->
             <div class="mb-4">

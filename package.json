@@ -1,0 +1,24 @@
+{
+  "name": "3baikhao",
+  "version": "1.0.0",
+  "description": "POS system for 3baikhao noodle shop",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx @tailwindcss/cli -i ./input.css -o ./dist/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ananbaludsamy/3baikhao.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ananbaludsamy/3baikhao/issues"
+  },
+  "homepage": "https://github.com/Ananbaludsamy/3baikhao#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  }
+}

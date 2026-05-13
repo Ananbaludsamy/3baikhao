@@ -14,6 +14,14 @@
                         <input type="text" id="cus-name" required class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="ชื่อ-นามสกุล">
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">ระดับสมาชิก</label>
+                        <select id="cus-level" required class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-primary bg-white">
+                            <option value="General">General (ทั่วไป)</option>
+                            <option value="VIP">VIP (ส่วนลด 5%)</option>
+                            <option value="Gold">Gold VIP (ส่วนลด 10%)</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
                         <input type="text" id="cus-tel" required class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="เบอร์โทรศัพท์">
                     </div>
@@ -40,6 +48,8 @@
                         <thead><tr class="bg-gray-100 text-sm">
                             <th class="p-3 border-b">รหัส</th>
                             <th class="p-3 border-b">ชื่อลูกค้า</th>
+                            <th class="p-3 border-b">ระดับ</th>
+                            <th class="p-3 border-b text-right">คะแนน</th>
                             <th class="p-3 border-b">เบอร์โทร</th>
                             <th class="p-3 border-b">ที่อยู่</th>
                             <th class="p-3 border-b text-center">จัดการ</th>

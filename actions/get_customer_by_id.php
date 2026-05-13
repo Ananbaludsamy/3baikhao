@@ -2,21 +2,16 @@
 header('Content-Type: application/json');
 require_once '../includes/db_connect.php';
 
-$cus_id = $_GET['id'] ?? null;
-if (!$cus_id) {
-    echo json_encode(['success' => false, 'message' => 'ไม่ระบุรหัสลูกค้า']);
+if (!isset($_GET['id'])) {
+    echo json_encode(['success' => false, 'message' => 'ไม่พบรหัสลูกค้า']);
     exit;
 }
 
 try {
     $stmt = $conn->prepare("SELECT * FROM customer_db WHERE Cus_id = ?");
-    $stmt->execute([$cus_id]);
+    $stmt->execute([$_GET['id']]);
     $customer = $stmt->fetch();
-    if ($customer) {
-        echo json_encode(['success' => true, 'customer' => $customer]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'ไม่พบข้อมูลลูกค้า']);
-    }
+    echo json_encode(['success' => true, 'customer' => $customer]);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
 }

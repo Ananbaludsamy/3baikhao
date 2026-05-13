@@ -18,7 +18,13 @@
             currentFilter: 'all',
             productTypes: [], // เพิ่มตัวแปรเก็บประเภทสินค้าสำหรับใช้ค้นหา
             materialTypes: [], // เพิ่มตัวแปรเก็บประเภทวัตถุดิบสำหรับใช้ค้นหา
-            materials: [] // เพิ่มตัวแปรเก็บข้อมูลวัตถุดิบทั้งหมด
+            materials: [], // เพิ่มตัวแปรเก็บข้อมูลวัตถุดิบทั้งหมด
+            memberDiscount: 0, // เก็บ % ส่วนลดปัจจุบัน
+            posCustomers: [], // เก็บรายชื่อลูกค้าทั้งหมดสำหรับ POS (รวมลูกค้าทั่วไป)
+            occupiedTablesWithCustomers: [], // เก็บข้อมูลโต๊ะที่มีออเดอร์ค้างอยู่ พร้อมรหัสลูกค้า
+            customerSearchQuery: '', // เก็บคำค้นหาลูกค้าปัจจุบัน
+            filteredPosCustomers: [], // รายชื่อลูกค้าที่ถูกกรองแล้วสำหรับแสดงผล
+            selectedPosCustomer: { Cus_id: 1, Cus_name: 'ลูกค้าทั่วไป (หน้าร้าน)', Cus_Level: 'General', Cus_Points: 0 } // ลูกค้าที่ถูกเลือกใน POS
         };
 
         const mainFunctions = {
@@ -27,7 +33,10 @@
                 this.updateTime();
                 this.loadMaterials(); // โหลดข้อมูลวัตถุดิบเริ่มต้น
                 this.renderTableSelection(); // สร้างปุ่มเลือกโต๊ะ
-                setInterval(() => this.updateTime(), 1000);
+                this.loadPosCustomers(); // โหลดรายชื่อสมาชิกเข้า POS
+                this.switchPage(state.currentPage); 
+                this.loadCustomers(); // โหลดข้อมูลลูกค้าเข้าตารางจัดการ
+                setInterval(() => { this.updateTime(); this.renderTableSelection(); }, 1000); // Update time and table selection every second
                 setInterval(() => this.renderTableSelection(), 10000); // อัปเดตสถานะโต๊ะทุก 10 วินาที
             },
 
@@ -167,7 +176,6 @@
                     container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-gray-400 py-10"><i class="fa-solid fa-basket-shopping text-4xl mb-3 text-gray-300"></i><p>ยังไม่มีรายการอาหาร</p></div>`;
                     checkoutBtn.disabled = true;
                 } else {
-                    checkoutBtn.disabled = false;
                     container.innerHTML = '';
                     state.cart.forEach(item => {
                         totalQty += item.qty; totalPrice += (item.price * item.qty);
@@ -197,7 +205,108 @@
                 document.getElementById('cart-subtotal').innerText = this.formatCurrency(totalPrice);
                 document.getElementById('cart-total').innerText = this.formatCurrency(totalPrice);
                 cartBadge.innerText = totalQty;
-                this.calculateChange(); // คำนวณเงินทอนใหม่ทุกครั้งที่ตะกร้าเปลี่ยน
+                this.applyMemberDiscount(); // คำนวณส่วนลดใหม่ทุกครั้งที่ตะกร้าเปลี่ยน
+            },
+
+            loadPosCustomers: function() {
+                fetch('actions/get_customers.php')
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success) {
+                        state.posCustomers = result.customers;
+                        // Ensure "ลูกค้าทั่วไป" is always in the list if not fetched
+                        if (!state.posCustomers.some(c => c.Cus_id == 1)) {
+                            state.posCustomers.unshift({ Cus_id: 1, Cus_name: 'ลูกค้าทั่วไป (หน้าร้าน)', Cus_Address: '-', Cus_Tel: '-', Cus_Level: 'General', Cus_Points: 0 });
+                        }
+                        state.filteredPosCustomers = [...state.posCustomers];
+                        this.selectCustomer(1);
+                    }
+                })
+                .catch(err => console.error('Error loading POS customers:', err));
+            },
+
+            filterCustomers: function(query) {
+                const q = query.toLowerCase().trim();
+                state.customerSearchQuery = q;
+                state.filteredPosCustomers = state.posCustomers.filter(cus => 
+                    cus.Cus_name.toLowerCase().includes(q) || 
+                    (cus.Cus_Tel && cus.Cus_Tel.includes(q))
+                );
+                this.renderCustomerSearch();
+            },
+
+            renderCustomerSearch: function() {
+                const resultsDiv = document.getElementById('customer-search-results');
+                if (!resultsDiv) return;
+                resultsDiv.innerHTML = '';
+                
+                if (state.filteredPosCustomers.length === 0) {
+                    resultsDiv.innerHTML = '<div class="p-3 text-center text-gray-400 text-sm">ไม่พบข้อมูลลูกค้า</div>';
+                    return;
+                }
+
+                state.filteredPosCustomers.forEach(cus => {
+                    const el = document.createElement('div');
+                    el.className = 'p-3 hover:bg-orange-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors';
+                    el.onclick = () => this.selectCustomer(cus.Cus_id);
+                    el.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-sm font-bold text-gray-800">${cus.Cus_name} ${cus.Cus_id === 1 ? '' : `(${cus.Cus_Points} แต้ม)`}</div>
+                                <div class="text-[10px] text-gray-500">${cus.Cus_Tel || '-'}</div>
+                            </div>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                                cus.Cus_Level === 'Gold' ? 'bg-yellow-100 text-yellow-700' : 
+                                cus.Cus_Level === 'VIP' ? 'bg-purple-100 text-purple-700' : 
+                                'bg-gray-100 text-gray-600'
+                            }">${cus.Cus_Level || 'General'}</span>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(el);
+                });
+            },
+
+            selectCustomer: function(cusId) {
+                const customer = state.posCustomers.find(c => c.Cus_id == cusId);
+                if (!customer) return;
+
+                // ล้างค่าหมายเลขโต๊ะเมื่อเปลี่ยนสมาชิก เพื่อป้องกันการสั่งข้ามโต๊ะโดยไม่ตั้งใจ
+                const tableInput = document.getElementById('table-number');
+                if (tableInput) tableInput.value = '';
+
+                state.selectedPosCustomer = { ...customer };
+                state.selectedPosCustomer.Cus_Level = state.selectedPosCustomer.Cus_Level || 'General';
+                state.selectedPosCustomer.Cus_Points = state.selectedPosCustomer.Cus_Points || 0;
+                
+                const input = document.getElementById('customer-search-input');
+                const hiddenInput = document.getElementById('pos-customer-select-id');
+                
+                if (input) input.value = customer.Cus_name;
+                if (hiddenInput) hiddenInput.value = customer.Cus_id;
+                
+                this.renderTableSelection(); // Re-render table selection based on new customer
+                this.applyMemberDiscount();
+                document.getElementById('customer-search-results')?.classList.add('hidden');
+            },
+
+            applyMemberDiscount: function() {
+                const info = document.getElementById('member-discount-info');
+                const rateEl = document.getElementById('member-discount-rate');
+                if (!state.selectedPosCustomer || !state.selectedPosCustomer.Cus_Level) return; // Ensure Cus_Level exists
+
+                let discount = 0;
+                if (state.selectedPosCustomer.Cus_Level === 'VIP') discount = 5; // Assuming 5% for VIP
+                else if (state.selectedPosCustomer.Cus_Level === 'Gold') discount = 10;
+                
+                state.memberDiscount = discount;
+
+                if (state.memberDiscount > 0) {
+                    info.classList.remove('hidden');
+                    rateEl.innerText = state.memberDiscount;
+                } else {
+                    info.classList.add('hidden');
+                }
+                this.calculateChange();
             },
 
             renderTableSelection: async function() {
@@ -207,26 +316,50 @@
                 try {
                     const response = await fetch('actions/get_pending_orders.php');
                     const result = await response.json();
-                    const occupiedTables = result.success ? result.data.map(o => o.table_no.toString().trim()) : [];
-                    const currentSelected = document.getElementById('table-number').value;
+                    // Assuming result.data now contains objects like { table_no: '1', cus_id: '123', ... }
+                    state.occupiedTablesWithCustomers = result.success ? result.data : [];
+                    const currentSelectedTableInput = document.getElementById('table-number');
+                    const currentSelectedTableNo = currentSelectedTableInput.value.toString();
+                    const selectedCusId = state.selectedPosCustomer.Cus_id.toString();
 
                     grid.innerHTML = '';
-                    // สมมติว่าร้านมี 20 โต๊ะ (สามารถปรับตัวเลขได้ตามจริง)
                     for (let i = 1; i <= 20; i++) {
                         const tableNo = i.toString();
-                        const isOccupied = occupiedTables.includes(tableNo);
-                        const isSelected = currentSelected === tableNo;
+                        const occupiedOrder = state.occupiedTablesWithCustomers.find(o => o.table_no === tableNo);
+                        const isOccupied = !!occupiedOrder;
+                        const isOccupiedBySelectedCustomer = isOccupied && occupiedOrder.cus_id === selectedCusId;
+                        const isCurrentlySelected = currentSelectedTableNo === tableNo; // This is the table currently in the input field
 
                         const btn = document.createElement('button');
                         btn.type = 'button';
-                        btn.onclick = () => isOccupied ? this.showToast('โต๊ะนี้มีออเดอร์ค้างอยู่', 'error') : this.selectTable(tableNo);
-
+                        
                         let bgColor = 'bg-white border-gray-200 text-gray-600 hover:bg-orange-50';
-                        if (isOccupied) bgColor = 'bg-red-100 border-red-200 text-red-500 cursor-not-allowed';
-                        if (isSelected) bgColor = 'bg-primary border-primary text-white shadow-md scale-95';
+                        let statusText = 'ว่าง';
+                        let isDisabled = false;
 
+                        if (isOccupied) {
+                            if (isOccupiedBySelectedCustomer) {
+                                bgColor = 'bg-primary border-primary text-white shadow-md scale-95';
+                                statusText = 'ของคุณ';
+                            } else {
+                                bgColor = 'bg-red-100 border-red-200 text-red-500 cursor-not-allowed';
+                                statusText = 'ไม่ว่าง';
+                                isDisabled = true;
+                            }
+                        } else if (isCurrentlySelected) { // If not occupied, but it's the selected table for the current order
+                            bgColor = 'bg-primary border-primary text-white shadow-md scale-95';
+                        }
+
+                        btn.onclick = () => {
+                            if (isDisabled) {
+                                this.showToast(`โต๊ะ ${tableNo} มีลูกค้าอื่นนั่งอยู่`, 'error');
+                            } else {
+                                this.selectTable(tableNo);
+                            }
+                        };
+                        btn.disabled = isDisabled;
                         btn.className = `${bgColor} border p-2 rounded-lg text-sm font-bold transition-all flex flex-col items-center justify-center h-12`;
-                        btn.innerHTML = `<span class="leading-none">${tableNo}</span><span class="text-[8px] uppercase mt-1">${isOccupied ? 'ไม่ว่าง' : 'ว่าง'}</span>`;
+                        btn.innerHTML = `<span class="leading-none">${tableNo}</span><span class="text-[8px] uppercase mt-1">${statusText}</span>`;
                         grid.appendChild(btn);
                     }
                 } catch (err) { console.error('Table status error:', err); }
@@ -243,18 +376,35 @@
             },
 
             calculateChange: function() {
-                const total = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-                const received = parseFloat(document.getElementById('cash-received').value) || 0;
+                const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                const discountAmount = (subtotal * state.memberDiscount) / 100;
+                const total = subtotal - discountAmount;
+
+                if (document.getElementById('cart-total')) {
+                    document.getElementById('cart-total').innerText = this.formatCurrency(total);
+                }
+
+                const cashInput = document.getElementById('cash-received');
+                if (!cashInput) return;
+
+                const received = parseFloat(cashInput.value) || 0;
                 const change = received - total;
                 
                 const changeEl = document.getElementById('cart-change');
-                changeEl.innerText = this.formatCurrency(change);
-                
-                // เปลี่ยนสีเตือนหากเงินรับไม่พอ
-                if (change < 0) {
-                    changeEl.parentElement.classList.replace('text-orange-600', 'text-red-500');
-                } else {
-                    changeEl.parentElement.classList.replace('text-red-500', 'text-orange-600');
+                if (changeEl) {
+                    changeEl.innerText = this.formatCurrency(change);
+                    // เปลี่ยนสีเตือนหากเงินรับไม่พอ
+                    if (change < 0) {
+                        changeEl.parentElement.classList.replace('text-orange-600', 'text-red-500');
+                    } else {
+                        changeEl.parentElement.classList.replace('text-red-500', 'text-orange-600');
+                    }
+                }
+
+                const checkoutBtn = document.getElementById('checkout-btn');
+                if (checkoutBtn) {
+                    // ปิดปุ่มถ้า: ตะกร้าว่าง หรือ ยังไม่ได้ระบุเงินรับ หรือ เงินรับน้อยกว่ายอดรวม
+                    checkoutBtn.disabled = (state.cart.length === 0 || received <= 0 || received < total);
                 }
             },
 
@@ -288,7 +438,7 @@
                 const postData = {
                     cart: state.cart,
                     total: totalAmount,
-                    cus_id: 1, // TODO: พัฒนาระบบเลือกลูกค้าในหน้า POS
+                    cus_id: document.getElementById('pos-customer-select-id').value,
                     emp_id: window.serverData.user.id,
                     table_no: tableNo
                 };
@@ -617,10 +767,14 @@
                     tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400">ยังไม่มีข้อมูลลูกค้าในระบบ</td></tr>';
                     return;
                 }
+                const levelColors = { 'General': 'bg-gray-100 text-gray-600', 'VIP': 'bg-purple-100 text-purple-700', 'Gold': 'bg-yellow-100 text-yellow-700' };
+                
                 tbody.innerHTML = customers.map(cus => `
                     <tr class="border-b hover:bg-gray-50 transition-colors">
                         <td class="p-3 text-sm text-gray-500">${cus.Cus_id}</td>
                         <td class="p-3 text-sm font-medium text-gray-800">${cus.Cus_name}</td>
+                        <td class="p-3 text-xs"><span class="px-2 py-1 rounded-full font-bold ${levelColors[cus.Cus_Level] || levelColors.General}">${cus.Cus_Level || 'General'}</span></td>
+                        <td class="p-3 text-sm font-bold text-blue-600 text-right">${Number(cus.Cus_Points || 0).toLocaleString()}</td>
                         <td class="p-3 text-sm text-gray-500">${cus.Cus_Tel}</td>
                         <td class="p-3 text-sm text-gray-500 truncate max-w-xs">${cus.Cus_Address}</td>
                         <td class="p-3 text-center">
@@ -639,10 +793,11 @@
                 e.preventDefault();
                 const cusId = document.getElementById('cus-id').value;
                 const name = document.getElementById('cus-name').value;
+                const level = document.getElementById('cus-level').value;
                 const tel = document.getElementById('cus-tel').value;
                 const address = document.getElementById('cus-address').value;
 
-                const postData = { cus_id: cusId, name, tel, address };
+                const postData = { cus_id: cusId, name, level, tel, address };
                 const url = cusId ? 'actions/update_customer.php' : 'actions/add_customer.php';
 
                 fetch(url, {
@@ -674,6 +829,7 @@
                         const cus = result.customer;
                         document.getElementById('cus-id').value = cus.Cus_id;
                         document.getElementById('cus-name').value = cus.Cus_name;
+                        document.getElementById('cus-level').value = cus.Cus_Level;
                         document.getElementById('cus-tel').value = cus.Cus_Tel;
                         document.getElementById('cus-address').value = cus.Cus_Address;
                         document.getElementById('customer-form-title').innerHTML = '<i class="fa-solid fa-user-edit mr-2"></i>แก้ไขข้อมูลลูกค้า';

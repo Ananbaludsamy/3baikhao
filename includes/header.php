@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบบริหารจัดการ ร้านกล้วยเตียวเรือ3ใบเขา (XAMPP Version)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="dist/output.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -16,11 +16,6 @@
         // จองพื้นที่ให้ Object app ทันทีเพื่อให้ปุ่ม onclick ทำงานได้โดยไม่เกิด Error
         window.app = window.app || {};
     </script>
-    <script>
-        tailwind.config = {
-            theme: { extend: { colors: { primary: '#7c2d12', secondary: '#b45309', } } }
-        }
-    </script>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen overflow-x-hidden flex relative">
 
@@ -30,7 +25,7 @@
             <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary font-bold text-xl flex-shrink-0 shadow-lg">
                 <i class="fa-solid fa-bowl-food"></i>
             </div>
-            <h1 class="font-bold text-lg hidden md:block leading-tight">ร้านกล้วยเตียวเรือ<br>3ใบเขา</h1>
+            <h1 class="font-bold text-lg hidden md:block leading-tight">ຮ້ານເຝີເຮືອ<br>3ໃບເຂົາ</h1>
         </div>
         
         <nav class="flex-1 mt-4 overflow-y-auto no-scrollbar">
