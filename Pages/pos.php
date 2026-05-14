@@ -1,96 +1,138 @@
-<!-- ================= หน้า 1: POS (การขาย) ================= -->
+<!-- ================= ໜ້າ: POS (ການຂາຍ) ================= -->
 <div id="page-pos" class="absolute inset-0 flex flex-col lg:flex-row transition-opacity duration-300 w-full h-full lg:pr-96 overflow-hidden">
-    <div class="flex-1 px-2 sm:px-4 py-3 overflow-y-auto no-scrollbar pb-24 lg:pb-4 flex flex-col w-full">
-        <div class="flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar flex-shrink-0">
+
+    <!-- Product Area -->
+    <div class="flex-1 px-3 sm:px-4 py-3 overflow-y-auto no-scrollbar pb-24 lg:pb-4 flex flex-col w-full">
+        <!-- Category Filter -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-1 no-scrollbar flex-shrink-0">
             <button onclick="app.setFilter('all')" id="filter-all"
-                class="filter-btn px-3 sm:px-4 py-2 bg-primary text-white rounded-full whitespace-nowrap shadow text-xs sm:text-sm">ทั้งหมด</button>
+                class="filter-btn px-4 py-2 bg-primary text-white rounded-full whitespace-nowrap shadow text-xs font-bold">ທັງໝົດ</button>
             <?php foreach ($categories as $cat): ?>
                 <button onclick="app.setFilter('<?php echo $cat['ProductType_id']; ?>')"
                     id="filter-<?php echo $cat['ProductType_id']; ?>"
-                    class="filter-btn px-3 sm:px-4 py-2 bg-white text-gray-600 hover:bg-gray-200 rounded-full whitespace-nowrap shadow-sm border border-gray-200 text-xs sm:text-sm">
+                    class="filter-btn px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 rounded-full whitespace-nowrap shadow-sm border border-slate-200 text-xs transition-colors">
                     <?php echo htmlspecialchars($cat['ProductType_name']); ?>
                 </button>
             <?php endforeach; ?>
         </div>
-        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 pb-10 w-full"></div>
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-10 w-full"></div>
     </div>
 
-    <div class="w-full lg:w-96 bg-white shadow-2xl lg:shadow-lg border-l border-gray-200 flex flex-col h-[60vh] lg:h-full z-20 absolute lg:fixed bottom-0 lg:bottom-auto lg:right-0 lg:top-0 rounded-t-3xl lg:rounded-none transition-transform duration-300 transform translate-y-[calc(100%-60px)] lg:translate-y-0"
+    <!-- Cart Panel -->
+    <div class="w-full lg:w-96 bg-white shadow-2xl lg:shadow-lg border-l border-slate-200 flex flex-col h-[62vh] lg:h-full z-20 absolute lg:fixed bottom-0 lg:bottom-auto lg:right-0 lg:top-0 rounded-t-2xl lg:rounded-none transition-transform duration-300 transform translate-y-[calc(100%-60px)] lg:translate-y-0"
         id="mobile-cart-panel">
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 lg:bg-white rounded-t-3xl lg:rounded-none cursor-pointer lg:cursor-auto shadow-sm lg:shadow-none"
+
+        <!-- Cart Header -->
+        <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-2xl lg:rounded-none cursor-pointer lg:cursor-auto"
             onclick="app.toggleMobileCart()">
-            <h3 class="font-bold text-lg text-primary flex items-center">
-                <i class="fa-solid fa-clipboard-list mr-2"></i> ບິນປັດຈຸບັນ
+            <h3 class="font-black text-primary flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-clipboard-list"></i> ບິນປັດຈຸບັນ
             </h3>
             <div class="flex items-center gap-2">
-                <span id="cart-count-badge"
-                    class="bg-primary text-white px-3 py-1 rounded-full text-xs font-bold lg:hidden shadow">0</span>
-                <i class="fa-solid fa-chevron-up lg:hidden transition-transform text-gray-500" id="cart-chevron"></i>
+                <span id="cart-count-badge" class="bg-primary text-white px-2.5 py-0.5 rounded-full text-xs font-bold lg:hidden">0</span>
+                <i class="fa-solid fa-chevron-up lg:hidden transition-transform text-slate-400 text-sm" id="cart-chevron"></i>
             </div>
         </div>
-        <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 bg-gray-50/50"></div>
-        <div id="cart-summary" class="p-4 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <div class="flex justify-between mb-2 text-gray-600 text-sm md:text-base">
-                <span>ยอดรวม (<span id="cart-total-qty">0</span> รายการ)</span>
-                <span><span id="cart-subtotal">0</span> ₭</span>
+
+        <!-- Cart Items -->
+        <div id="cart-items-container" class="flex-1 overflow-y-auto p-3 bg-slate-50/50"></div>
+
+        <!-- Cart Summary -->
+        <div id="cart-summary" class="p-4 bg-white border-t border-slate-100">
+
+            <!-- Subtotal -->
+            <div class="flex justify-between mb-3 text-slate-600 text-sm">
+                <span>ຍອດລວມ (<span id="cart-total-qty">0</span> ລາຍການ)</span>
+                <span class="font-bold text-slate-700">₭<span id="cart-subtotal">0</span></span>
             </div>
-            <!-- ส่วนเลือกสมาชิก/ลูกค้าพิเศษ (Searchable Select) -->
+
+            <!-- Member Search -->
             <div class="mb-3">
-                <label class="block text-sm font-bold text-gray-700 mb-1">สมาชิก (Member)</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">ສະມາຊິກ</label>
                 <div class="relative">
-                    <input type="text" id="customer-search-input" oninput="app.filterCustomers(this.value)" 
-                        class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-primary bg-white text-sm" 
-                        placeholder="ค้นหาชื่อหรือเบอร์โทรลูกค้า"
+                    <input type="text" id="customer-search-input" oninput="app.filterCustomers(this.value)"
+                        class="w-full px-3 py-2 border-1.5 border-slate-200 rounded-xl text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 bg-white transition-all"
+                        placeholder="ຄົ້ນຫາຊື່ ຫຼື ເບີໂທ"
                         onfocus="app.renderCustomerSearch(); document.getElementById('customer-search-results').classList.remove('hidden')"
                         onblur="setTimeout(() => document.getElementById('customer-search-results').classList.add('hidden'), 200)">
-                    <div id="customer-search-results" 
-                        class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
+                    <div id="customer-search-results"
+                        class="absolute z-10 w-full bg-white border border-slate-200 rounded-xl shadow-lg mt-1 max-h-48 overflow-y-auto hidden">
                     </div>
                 </div>
-                <!-- Hidden input สำหรับเก็บรหัสลูกค้าที่เลือก -->
                 <input type="hidden" id="pos-customer-select-id" value="1">
                 <div id="member-discount-info" class="text-[10px] text-green-600 font-bold mt-1 hidden">
-                    <i class="fa-solid fa-star"></i> สิทธิพิเศษ: ส่วนลด <span id="member-discount-rate">0</span>%
+                    <i class="fa-solid fa-star"></i> ສ່ວນຫຼຸດສະມາຊິກ <span id="member-discount-rate">0</span>%
                 </div>
             </div>
-            <!-- ส่วนเลือกหมายเลขโต๊ะแบบปุ่ม -->
-            <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">เลือกโต๊ะ (Select Table)</label>
-                <div id="table-grid" class="grid grid-cols-5 gap-2 max-h-32 overflow-y-auto no-scrollbar p-1 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                    <!-- ปุ่มโต๊ะจะถูกสร้างโดย JavaScript -->
+
+            <!-- Points Redemption -->
+            <div id="points-redemption-section" class="mb-3 hidden">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">ແລກຄະແນນ</label>
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5">
+                    <div class="flex justify-between items-center mb-2 text-xs">
+                        <span class="text-slate-500">ຄະແນນທີ່ມີ:</span>
+                        <span class="font-black text-purple-700">
+                            <span id="available-points">0</span> ຄະ
+                            <span class="text-purple-400 font-normal">(≈₭<span id="available-points-value">0</span>)</span>
+                        </span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="points-to-use" min="0" value="0"
+                            oninput="app.calculateChange()"
+                            class="flex-1 px-2 py-1.5 border border-purple-300 rounded-lg text-sm text-right font-bold outline-none focus:border-purple-500 bg-white">
+                        <button type="button" onclick="app.useAllPoints()"
+                            class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap">
+                            ໃຊ້ທັງໝົດ
+                        </button>
+                    </div>
+                    <div id="points-discount-display" class="hidden mt-1.5 flex justify-between text-xs font-bold text-purple-700">
+                        <span>ສ່ວນຫຼຸດຄະແນນ:</span>
+                        <span>-₭<span id="points-discount-amount">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Selection -->
+            <div class="mb-3">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">ເລືອກໂຕະ</label>
+                <div id="table-grid" class="grid grid-cols-5 gap-1.5 max-h-32 overflow-y-auto no-scrollbar p-2 bg-slate-50 rounded-xl border border-dashed border-slate-300">
                 </div>
                 <input type="hidden" id="table-number" value="">
             </div>
+
+            <!-- Cash Input -->
             <div class="mb-3">
-                <div class="flex justify-between mb-1 text-gray-700 font-medium">
-                    <span>เงินรับ (Cash)</span>
-                    <div class="relative w-32">
-                        <input type="number" id="cash-received" oninput="app.calculateChange()" 
-                            class="w-full text-right border-b-2 border-primary focus:outline-none font-bold text-lg" 
-                            placeholder="0">
-                    </div>
+                <div class="flex justify-between items-center mb-1.5">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">ເງິນຮັບ</label>
+                    <input type="number" id="cash-received" oninput="app.calculateChange()"
+                        class="text-right border-b-2 border-primary focus:outline-none font-black text-lg w-32 bg-transparent"
+                        placeholder="0">
                 </div>
-                <!-- ปุ่มลัดเงินกีบ -->
-                <div class="flex flex-wrap gap-1 justify-end mt-2">
-                    <button onclick="app.setQuickCash(5000)" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs border border-gray-300 transition-colors">5,000</button>
-                    <button onclick="app.setQuickCash(10000)" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs border border-gray-300 transition-colors">10,000</button>
-                    <button onclick="app.setQuickCash(20000)" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs border border-gray-300 transition-colors">20,000</button>
-                    <button onclick="app.setQuickCash(50000)" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs border border-gray-300 transition-colors">50,000</button>
-                    <button onclick="app.setQuickCash(100000)" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs border border-gray-300 transition-colors">100,000</button>
+                <div class="flex flex-wrap gap-1 justify-end">
+                    <?php foreach ([5000, 10000, 20000, 50000, 100000] as $amt): ?>
+                    <button onclick="app.setQuickCash(<?php echo $amt; ?>)"
+                        class="px-2 py-1 bg-slate-100 hover:bg-orange-100 hover:text-primary rounded-lg text-xs border border-slate-200 transition-colors font-medium">
+                        <?php echo number_format($amt); ?>
+                    </button>
+                    <?php endforeach; ?>
                 </div>
             </div>
-            <div class="flex justify-between mb-2 text-orange-600 font-bold">
-                <span>เงินทอน (Change)</span>
-                <span><span id="cart-change">0</span> ₭</span>
+
+            <!-- Change & Total -->
+            <div class="flex justify-between mb-1 text-orange-500 font-bold text-sm">
+                <span>ເງິນທອນ</span>
+                <span>₭<span id="cart-change">0</span></span>
             </div>
-            <div
-                class="flex justify-between mb-4 font-bold text-xl md:text-2xl text-primary border-b border-gray-200 pb-2">
-                <span>ยอดสุทธิ</span>
-                <span><span id="cart-total">0</span> ₭</span>
+            <div class="flex justify-between mb-3 font-black text-xl text-primary border-t border-slate-100 pt-2 mt-1">
+                <span>ຍອດສຸດທິ</span>
+                <span>₭<span id="cart-total">0</span></span>
             </div>
+
+            <!-- Checkout Button -->
             <button onclick="app.checkout()" id="checkout-btn"
-                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 md:py-4 rounded-xl shadow-md transition-all flex justify-center items-center gap-2 text-lg active:scale-95">
-                <i class="fa-solid fa-check-circle"></i> ยืนยันชำระเงิน
+                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-black py-3.5 rounded-xl shadow transition-all flex justify-center items-center gap-2 text-base active:scale-95">
+                <i class="fa-solid fa-check-circle"></i> ຢືນຢັນຊໍາລະເງິນ
             </button>
         </div>
     </div>

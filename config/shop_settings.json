@@ -1,0 +1,12 @@
+{
+    "shop_name": "ຮ້ານເຝີເຮືອ 3ໃບເຂົາ",
+    "shop_phone": "020-7816-8482",
+    "shop_address": "ນະຄອນຫຼວງວຽງຈັນ",
+    "point_value": 1000,
+    "earn_rate": 10000,
+    "tables_count": 15,
+    "vip_threshold": 500000,
+    "gold_threshold": 2000000,
+    "vip_discount": 5,
+    "gold_discount": 10
+}

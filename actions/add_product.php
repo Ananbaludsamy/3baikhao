@@ -1,5 +1,7 @@
 <?php
 header('Content-Type: application/json');
+require_once '../includes/auth_check.php';
+require_admin();
 require_once '../includes/db_connect.php';
 
 // เปลี่ยนมารับค่าจาก $_POST แทน JSON เนื่องจากมีการส่งไฟล์

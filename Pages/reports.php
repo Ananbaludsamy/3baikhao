@@ -1,41 +1,158 @@
-<!-- ================= หน้า: ออกรายงาน ================= -->
-<div id="page-reports" class="absolute inset-0 p-4 lg:p-8 overflow-y-auto hidden opacity-0 transition-opacity duration-300">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-100 flex flex-col items-center text-center">
-            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-4">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
+<!-- ================= ໜ້າ: ອອກລາຍງານ ================= -->
+<div id="page-reports" class="absolute inset-0 p-4 lg:p-6 overflow-y-auto hidden opacity-0 transition-opacity duration-300">
+
+    <!-- Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        <div onclick="app.showDailySalesPanel()" class="page-card p-4 flex items-center gap-4 cursor-pointer hover:shadow-md hover:border-blue-300 border border-transparent transition-all">
+            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-file-invoice-dollar text-blue-600 text-xl"></i>
             </div>
-            <h4 class="font-bold text-gray-800">รายงานยอดขายประจำวัน</h4>
-            <p class="text-sm text-gray-500 mt-2">สรุปรายการขายและรายได้แยกตามบิล</p>
+            <div>
+                <h4 class="font-bold text-slate-700 text-sm">ຍອດຂາຍລາຍວັນ</h4>
+                <p class="text-xs text-slate-400 mt-0.5">ສະຫຼຸບລາຍການຂາຍແລະລາຍໄດ້ແຍກຕາມບິນ</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-300 ml-auto text-sm"></i>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-100 flex flex-col items-center text-center">
-            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl mb-4">
-                <i class="fa-solid fa-box-archive"></i>
+        <div onclick="app.showStockReportPanel()" class="page-card p-4 flex items-center gap-4 cursor-pointer hover:shadow-md hover:border-green-300 border border-transparent transition-all">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-box-archive text-green-600 text-xl"></i>
             </div>
-            <h4 class="font-bold text-gray-800">รายงานสต็อกวัตถุดิบ</h4>
-            <p class="text-sm text-gray-500 mt-2">ตรวจสอบจำนวนวัตถุดิบคงเหลือและรายการเบิกใช้</p>
+            <div>
+                <h4 class="font-bold text-slate-700 text-sm">ລາຍງານສະຕ໋ອກ</h4>
+                <p class="text-xs text-slate-400 mt-0.5">ຈໍານວນຄົງເຫຼືອແລະລາຍການໃກ້ໝົດ</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-300 ml-auto text-sm"></i>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-100 flex flex-col items-center text-center">
-            <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-2xl mb-4">
-                <i class="fa-solid fa-chart-line"></i>
+        <div onclick="document.getElementById('monthly-top-products-table').closest('.page-card')?.scrollIntoView({behavior:'smooth'})" class="page-card p-4 flex items-center gap-4 cursor-pointer hover:shadow-md hover:border-orange-300 border border-transparent transition-all">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-chart-line text-orange-500 text-xl"></i>
             </div>
-            <h4 class="font-bold text-gray-800">รายงานเมนูยอดนิยม</h4>
-            <p class="text-sm text-gray-500 mt-2">วิเคราะห์เมนูที่ทำกำไรและขายดีที่สุด</p>
+            <div>
+                <h4 class="font-bold text-slate-700 text-sm">ເມນູຍອດນິຍົມ</h4>
+                <p class="text-xs text-slate-400 mt-0.5">ວິເຄາະເມນູທີ່ຂາຍດີທີ່ສຸດ</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-300 ml-auto text-sm"></i>
         </div>
     </div>
 
-    <!-- รายงานยอดขายรายเดือน -->
-    <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 mt-8">
-        <div class="p-5 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-calendar-days mr-2 text-primary"></i>รายงานยอดขายรายเดือน</h3>
+    <!-- Daily Sales Panel -->
+    <div id="daily-sales-panel" class="page-card mb-5 hidden">
+        <div class="page-card-header">
             <div class="flex items-center gap-2">
-                <select id="report-month" class="p-2 border rounded-lg text-sm bg-white">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-file-invoice-dollar text-blue-600 text-sm"></i>
+                </div>
+                <h3 class="font-bold text-slate-700 text-sm">ຍອດຂາຍລາຍວັນ</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="date" id="daily-sales-date" class="form-input text-xs" style="width:auto;padding:7px 10px;"
+                    value="<?php echo date('Y-m-d'); ?>">
+                <button onclick="app.loadDailySales(document.getElementById('daily-sales-date').value)"
+                    class="btn-primary" style="padding:7px 14px;font-size:12px;">
+                    <i class="fa-solid fa-eye"></i> ເບິ່ງ
+                </button>
+                <button onclick="document.getElementById('daily-sales-panel').classList.add('hidden')"
+                    class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-4">
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-blue-50 rounded-xl p-3 text-center">
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">ຍອດຂາຍ</p>
+                    <h4 class="text-xl font-black text-blue-800 mt-1">₭<span id="daily-sales-total">0</span></h4>
+                </div>
+                <div class="bg-blue-50 rounded-xl p-3 text-center">
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">ຈໍານວນບິນ</p>
+                    <h4 class="text-xl font-black text-blue-800 mt-1"><span id="daily-sales-count">0</span></h4>
+                </div>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-slate-100">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="table-header">
+                            <th class="w-28">ເລກບິນ</th>
+                            <th class="w-16">ໂຕະ</th>
+                            <th class="w-32">ລູກຄ້າ</th>
+                            <th>ລາຍການ</th>
+                            <th class="w-32 text-right">ຍອດ (₭)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="daily-sales-table">
+                        <tr class="table-row"><td colspan="5" class="text-center text-slate-400 py-8">ກົດ "ເບິ່ງ" ເພື່ອໂຫຼດຂໍ້ມູນ</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Report Panel -->
+    <div id="stock-report-panel" class="page-card mb-5 hidden">
+        <div class="page-card-header">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-box-archive text-green-600 text-sm"></i>
+                </div>
+                <h3 class="font-bold text-slate-700 text-sm">ລາຍງານສະຕ໋ອກວັດຖຸດິບ</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="app.loadStockReport()" class="btn-secondary" style="padding:6px 12px;font-size:12px;">
+                    <i class="fa-solid fa-rotate"></i> ໂຫຼດໃໝ່
+                </button>
+                <button onclick="document.getElementById('stock-report-panel').classList.add('hidden')"
+                    class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-4">
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-red-50 rounded-xl p-3 text-center">
+                    <p class="text-xs font-bold text-red-500 uppercase tracking-wide">ສ່ຽງໝົດ (≤5)</p>
+                    <h4 class="text-xl font-black text-red-700 mt-1"><span id="stock-low-count">0</span> ລາຍການ</h4>
+                </div>
+                <div class="bg-yellow-50 rounded-xl p-3 text-center">
+                    <p class="text-xs font-bold text-yellow-600 uppercase tracking-wide">ໃກ້ໝົດ (6-10)</p>
+                    <h4 class="text-xl font-black text-yellow-700 mt-1"><span id="stock-medium-count">0</span> ລາຍການ</h4>
+                </div>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-slate-100">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="table-header">
+                            <th>ຊື່ວັດຖຸດິບ</th>
+                            <th>ປະເພດ</th>
+                            <th class="text-right">ຄົງເຫຼືອ</th>
+                            <th>ຫົວໜ່ວຍ</th>
+                            <th>ສະຖານະ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-report-table">
+                        <tr class="table-row"><td colspan="5" class="text-center text-slate-400 py-8">ກໍາລັງໂຫຼດ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ລາຍງານລາຍເດືອນ -->
+    <div class="page-card">
+        <div class="page-card-header">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-calendar-days text-primary text-sm"></i>
+                </div>
+                <h3 class="font-bold text-slate-700 text-sm">ລາຍງານຍອດຂາຍລາຍເດືອນ</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <select id="report-month" class="form-input text-xs" style="width:auto;padding:7px 10px;">
                     <?php
                     $currentMonth = date('m');
                     $months = [
-                        '01' => 'มกราคม', '02' => 'กุมภาพันธ์', '03' => 'มีนาคม', '04' => 'เมษายน',
-                        '05' => 'พฤษภาคม', '06' => 'มิถุนายน', '07' => 'กรกฎาคม', '08' => 'สิงหาคม',
-                        '09' => 'กันยายน', '10' => 'ตุลาคม', '11' => 'พฤศจิกายน', '12' => 'ธันวาคม'
+                        '01'=>'ມັງກອນ','02'=>'ກຸມພາ','03'=>'ມີນາ','04'=>'ເມສາ',
+                        '05'=>'ພຶດສະພາ','06'=>'ມິຖຸນາ','07'=>'ກໍລະກົດ','08'=>'ສິງຫາ',
+                        '09'=>'ກັນຍາ','10'=>'ຕຸລາ','11'=>'ພະຈິກ','12'=>'ທັນວາ'
                     ];
                     foreach ($months as $num => $name) {
                         $selected = ($num == $currentMonth) ? 'selected' : '';
@@ -43,7 +160,7 @@
                     }
                     ?>
                 </select>
-                <select id="report-year" class="p-2 border rounded-lg text-sm bg-white">
+                <select id="report-year" class="form-input text-xs" style="width:auto;padding:7px 10px;">
                     <?php
                     $currentYear = date('Y');
                     for ($y = $currentYear; $y >= $currentYear - 5; $y--) {
@@ -52,55 +169,65 @@
                     }
                     ?>
                 </select>
-                <button onclick="app.loadMonthlySalesReport()" class="bg-primary text-white text-sm px-4 py-2 rounded-lg font-medium hover:bg-secondary transition-colors">
-                    <i class="fa-solid fa-eye mr-1"></i> ดูรายงาน
+                <button onclick="app.loadMonthlySalesReport()" class="btn-primary" style="padding:7px 14px;font-size:12px;">
+                    <i class="fa-solid fa-eye"></i> ເບິ່ງລາຍງານ
                 </button>
-                <a id="export-monthly-sales-btn" href="#" target="_blank" class="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                <a id="export-monthly-sales-btn" href="#" target="_blank" class="btn-secondary" style="padding:7px 12px;font-size:12px;text-decoration:none;">
+                    <i class="fa-solid fa-file-excel text-green-600"></i> Export
                 </a>
             </div>
         </div>
-        <div class="p-5">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-blue-50 p-4 rounded-lg text-center">
-                    <p class="text-sm text-blue-700 font-medium">ยอดขายรวม</p>
-                    <h4 class="text-2xl font-bold text-blue-800">₭<span id="monthly-total-sales">0</span></h4>
+
+        <div class="p-4">
+            <!-- KPI ສະຫຼຸບ -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                <div style="background:#eff6ff;border-radius:12px;padding:16px;text-align:center;">
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">ຍອດຂາຍລວມ</p>
+                    <h4 class="text-2xl font-black text-blue-800 mt-1">₭<span id="monthly-total-sales">0</span></h4>
                 </div>
-                <div class="bg-blue-50 p-4 rounded-lg text-center">
-                    <p class="text-sm text-blue-700 font-medium">จำนวนบิล</p>
-                    <h4 class="text-2xl font-bold text-blue-800"><span id="monthly-total-orders">0</span></h4>
+                <div style="background:#eff6ff;border-radius:12px;padding:16px;text-align:center;">
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">ຈໍານວນບິນ</p>
+                    <h4 class="text-2xl font-black text-blue-800 mt-1"><span id="monthly-total-orders">0</span></h4>
                 </div>
-                <div class="bg-blue-50 p-4 rounded-lg text-center">
-                    <p class="text-sm text-blue-700 font-medium">เมนูขายดีที่สุด</p>
-                    <h4 class="text-lg font-bold text-blue-800 truncate" id="monthly-best-seller">-</h4>
+                <div style="background:#eff6ff;border-radius:12px;padding:16px;text-align:center;">
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">ເມນູຂາຍດີທີ່ສຸດ</p>
+                    <h4 class="text-base font-black text-blue-800 mt-1 truncate" id="monthly-best-seller">-</h4>
                 </div>
             </div>
 
-            <h4 class="font-bold text-gray-800 mb-3">ยอดขายแยกตามประเภทสินค้า</h4>
-            <div class="overflow-x-auto mb-6">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-100 text-xs font-bold text-gray-600 uppercase tracking-wider">
-                            <th class="p-3 border-b">ประเภทสินค้า</th>
-                            <th class="p-3 border-b text-right">ยอดขาย (₭)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="monthly-sales-by-type-table" class="text-sm"></tbody>
-                </table>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- ຍອດຂາຍແຍກປະເພດ -->
+                <div>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">ຍອດຂາຍແຍກຕາມປະເພດສິນຄ້າ</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="table-header">
+                                    <th>ປະເພດສິນຄ້າ</th>
+                                    <th class="text-right">ຍອດຂາຍ (₭)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly-sales-by-type-table"></tbody>
+                        </table>
+                    </div>
+                </div>
 
-            <h4 class="font-bold text-gray-800 mb-3">10 อันดับเมนูขายดีประจำเดือน</h4>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-100 text-xs font-bold text-gray-600 uppercase tracking-wider">
-                            <th class="p-3 border-b">ชื่อเมนู</th>
-                            <th class="p-3 border-b text-right">จำนวนที่ขาย</th>
-                            <th class="p-3 border-b text-right">รายได้ (₭)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="monthly-top-products-table" class="text-sm"></tbody>
-                </table>
+                <!-- 10 ອັນດັບເມນູຂາຍດີ -->
+                <div>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">10 ອັນດັບເມນູຂາຍດີປະຈໍາເດືອນ</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="table-header">
+                                    <th>ຊື່ເມນູ</th>
+                                    <th class="text-right">ຈໍານວນ</th>
+                                    <th class="text-right">ລາຍໄດ້ (₭)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly-top-products-table"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

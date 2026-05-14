@@ -1,4 +1,6 @@
 <?php
+require_once '../includes/auth_check.php';
+require_admin();
 require_once '../includes/db_connect.php';
 
 // ตั้งค่า Header เพื่อบอก Browser ว่านี่คือไฟล์ CSV และให้ดาวน์โหลด

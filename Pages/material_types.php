@@ -1,40 +1,53 @@
-<!-- ================= หน้า: ประเภทวัตถุดิบ ================= -->
-<div id="page-material-types" class="absolute inset-0 p-4 lg:p-8 overflow-y-auto hidden opacity-0 transition-opacity duration-300">
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-            <div class="p-4 border-b border-gray-200 bg-primary text-white">
-                <h3 class="font-bold"><i class="fa-solid fa-boxes-stacked mr-2"></i>จัดการประเภทวัตถุดิบ</h3>
+<!-- ================= ໜ້າ: ປະເພດວັດຖຸດິບ ================= -->
+<div id="page-material-types" class="absolute inset-0 p-4 lg:p-6 overflow-y-auto hidden opacity-0 transition-opacity duration-300">
+    <div class="max-w-3xl mx-auto">
+        <div class="page-card mb-5">
+            <div class="page-card-header">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-boxes-stacked text-primary text-sm"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 text-sm">ເພີ່ມ / ແກ້ໄຂປະເພດວັດຖຸດິບ</h3>
+                </div>
             </div>
-            <div class="p-6">
-                <div class="flex gap-4 mb-6">
-                    <input type="hidden" id="edit-mat-type-id">
-                    <input type="text" id="new-mat-type-name" class="flex-1 p-2 border rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="ระบุชื่อประเภทวัตถุดิบ">
-                    <div class="flex gap-2">
-                        <button id="mat-type-submit-btn" onclick="app.saveMaterialType()" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-secondary transition-colors">เพิ่มประเภท</button>
-                        <button id="mat-type-cancel-btn" onclick="app.resetMaterialTypeForm()" class="hidden bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-300">ยกเลิก</button>
-                    </div>
+            <div class="p-4">
+                <input type="hidden" id="edit-mat-type-id">
+                <div class="flex gap-3">
+                    <input type="text" id="new-mat-type-name" class="form-input flex-1" placeholder="ລະບຸຊື່ປະເພດວັດຖຸດິບ ເຊັ່ນ: ຊີ້ນສັດ, ຜັກ, ເຄື່ອງປຸງ">
+                    <button id="mat-type-submit-btn" onclick="app.saveMaterialType()" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> ເພີ່ມປະເພດ
+                    </button>
+                    <button id="mat-type-cancel-btn" onclick="app.resetMaterialTypeForm()" class="btn-secondary hidden">
+                        <i class="fa-solid fa-xmark"></i> ຍົກເລີກ
+                    </button>
                 </div>
-                <!-- ส่วนค้นหา -->
-                <div class="mb-4 relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-                    </div>
-                    <input type="text" id="search-mat-type-input" oninput="app.searchMaterialTypes()" 
-                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm" 
-                        placeholder="ค้นหาชื่อประเภทวัตถุดิบ หรือรหัส...">
+            </div>
+        </div>
+
+        <div class="page-card">
+            <div class="page-card-header">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-list text-slate-400 text-sm"></i>
+                    <h3 class="font-bold text-slate-700 text-sm">ລາຍການປະເພດວັດຖຸດິບທັງໝົດ</h3>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead><tr class="bg-gray-100 text-sm">
-                            <th class="p-3 border-b">รหัส</th>
-                            <th class="p-3 border-b">ชื่อประเภทวัตถุดิบ</th>
-                            <th class="p-3 border-b text-center w-24">จัดการ</th>
-                        </tr></thead>
-                        <tbody id="mat-type-table-body">
-                            <!-- ข้อมูลจะถูกโหลดโดย JavaScript -->
-                        </tbody>
-                    </table>
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    <input type="text" id="search-mat-type-input" oninput="app.searchMaterialTypes()"
+                        class="form-input pl-8 text-xs" style="width:200px;padding-top:8px;padding-bottom:8px;"
+                        placeholder="ຄົ້ນຫາປະເພດວັດຖຸດິບ...">
                 </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="table-header">
+                            <th>ລະຫັດ</th>
+                            <th>ຊື່ປະເພດວັດຖຸດິບ</th>
+                            <th class="text-center w-24">ຈັດການ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mat-type-table-body"></tbody>
+                </table>
             </div>
         </div>
     </div>

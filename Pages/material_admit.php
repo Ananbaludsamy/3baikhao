@@ -1,28 +1,40 @@
-<!-- ================= หน้า: รับเข้าวัตถุดิบ ================= -->
-<div id="page-material-admit" class="absolute inset-0 p-4 lg:p-8 overflow-y-auto hidden opacity-0 transition-opacity duration-300">
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-gray-200 bg-green-600 text-white">
-                <h3 class="font-bold"><i class="fa-solid fa-truck-ramp-box mr-2"></i>บันทึกการรับเข้าวัตถุดิบ (เพิ่มสต็อก)</h3>
-            </div>
-            <form id="admit-form" onsubmit="app.saveAdmit(event)" class="p-6 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">เลือกวัตถุดิบ</label>
-                        <select id="admit-material-id" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500 bg-white text-lg"></select>
+<!-- ================= ໜ້າ: ຮັບເຂົ້າວັດຖຸດິບ ================= -->
+<div id="page-material-admit" class="absolute inset-0 p-4 lg:p-6 overflow-y-auto hidden opacity-0 transition-opacity duration-300">
+    <div class="max-w-2xl mx-auto">
+        <div class="page-card">
+            <div class="page-card-header">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-truck-ramp-box text-green-600 text-sm"></i>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">จำนวนที่รับเข้า</label>
-                        <input type="number" id="admit-qty" required min="1" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500 text-lg" placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">ราคาซื้อต่อหน่วย (₭)</label>
-                        <input type="number" id="admit-price" required min="0" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500 text-lg" placeholder="0">
+                        <h3 class="font-bold text-slate-700 text-sm">ບັນທຶກການຮັບເຂົ້າວັດຖຸດິບ</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">ສະຕ໋ອກເພີ່ມ + <span class="text-red-500 font-bold">ບັນທຶກລາຍຈ່າຍໃນລາຍຮັບ-ລາຍຈ່າຍ</span> ອັດຕະໂນມັດ</p>
                     </div>
                 </div>
-                <div class="flex justify-end pt-4">
-                    <button type="submit" class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg active:scale-95">
-                        <i class="fa-solid fa-plus-circle mr-2"></i> ยืนยันรับเข้าสต็อก
+            </div>
+            <form id="admit-form" onsubmit="app.saveAdmit(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="form-label">ເລືອກວັດຖຸດິບທີ່ຮັບເຂົ້າ</label>
+                    <select id="admit-material-id" required class="form-input"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">ຈໍານວນທີ່ຮັບເຂົ້າ</label>
+                        <input type="number" id="admit-qty" required min="1" class="form-input" placeholder="0">
+                    </div>
+                    <div>
+                        <label class="form-label">ລາຄາຊື້ຕໍ່ຫົວໜ່ວຍ (₭)</label>
+                        <input type="number" id="admit-price" required min="0" class="form-input" placeholder="0">
+                    </div>
+                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;font-size:12px;color:#15803d;display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    ລາຄາຊື້ທີ່ບັນທຶກຈະອັບເດດລາຄາຕົ້ນທຶນຂອງວັດຖຸດິບນີ້ໃນລະບົບໂດຍອັດຕະໂນມັດ
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="btn-primary" style="background:#16a34a;padding:12px 28px;font-size:14px;">
+                        <i class="fa-solid fa-plus-circle"></i> ຢືນຢັນຮັບເຂົ້າສະຕ໋ອກ
                     </button>
                 </div>
             </form>

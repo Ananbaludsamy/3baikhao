@@ -1,5 +1,7 @@
 <?php
 header('Content-Type: application/json');
+require_once '../includes/auth_check.php';
+require_admin();
 require_once '../includes/db_connect.php';
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);

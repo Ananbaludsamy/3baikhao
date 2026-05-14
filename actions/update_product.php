@@ -1,5 +1,7 @@
 <?php
 header('Content-Type: application/json');
+require_once '../includes/auth_check.php';
+require_admin();
 require_once '../includes/db_connect.php';
 
 if (empty($_POST['id']) || empty($_POST['name']) || empty($_POST['price']) || empty($_POST['cat'])) {

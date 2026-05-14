@@ -1,157 +1,184 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="lo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบริหารจัดการ ร้านกล้วยเตียวเรือ3ใบเขา (XAMPP Version)</title>
+    <title>ລະບົບຈັດການ - ຮ້ານເຝີເຮືອ 3ໃບເຂົາ</title>
     <link href="dist/output.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Phetsarath:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Prompt', sans-serif; }
+        body { font-family: 'Phetsarath', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .form-input { width:100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 15px; outline: none; transition: border-color .2s, box-shadow .2s; background: white; font-family: 'Phetsarath', sans-serif; color: #1e293b; }
+        .form-input:focus { border-color: #f97316; box-shadow: 0 0 0 3px rgba(249,115,22,.12); }
+        .form-label { display:block; font-size:12px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+        .btn-primary { background:#7c2d12; color:white; font-weight:700; padding:10px 20px; border-radius:12px; transition:all .2s; font-size:14px; display:inline-flex; align-items:center; gap:6px; border:none; cursor:pointer; font-family:'Phetsarath',sans-serif; }
+        .btn-primary:hover { background:#b45309; }
+        .btn-secondary { background:#f1f5f9; color:#334155; font-weight:700; padding:10px 16px; border-radius:12px; transition:all .2s; font-size:14px; display:inline-flex; align-items:center; gap:6px; border:none; cursor:pointer; font-family:'Phetsarath',sans-serif; }
+        .btn-secondary:hover { background:#e2e8f0; }
+        .page-card { background:white; border-radius:20px; border: 1px solid #f1f5f9; box-shadow: 0 1px 4px rgba(0,0,0,.04); overflow:hidden; }
+        .page-card-header { padding:16px 20px; border-bottom: 1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between; }
+        .table-header th { padding:12px 16px; font-size:12px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:.05em; border-bottom: 1px solid #f1f5f9; text-align:left; white-space:nowrap; }
+        .table-row td { padding:14px 16px; font-size:14px; border-bottom: 1px solid #f8fafc; color:#334155; white-space:nowrap; }
+        table { border-collapse:collapse; }
+        .table-row:hover { background:#fafafa; }
+        .table-row:last-child td { border-bottom: none; }
+        .badge-admin { background:#f3e8ff; color:#6d28d9; font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
+        .badge-staff { background:#dbeafe; color:#1d4ed8; font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
+        .badge-general { background:#f1f5f9; color:#475569; font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
+        .badge-gold { background:#fef9c3; color:#92400e; font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
+        .badge-vip { background:#f5f3ff; color:#5b21b6; font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
     </style>
-    <script>
-        // จองพื้นที่ให้ Object app ทันทีเพื่อให้ปุ่ม onclick ทำงานได้โดยไม่เกิด Error
-        window.app = window.app || {};
-    </script>
+    <script>window.app = window.app || {};</script>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen overflow-x-hidden flex relative">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex">
 
-    <!-- Sidebar / เมนูนำทาง -->
-    <aside class="w-20 md:w-64 bg-primary text-white flex flex-col transition-all duration-300 flex-shrink-0 z-30 overflow-y-auto">
-        <div class="p-4 flex items-center justify-center md:justify-start gap-3 border-b border-orange-900/50">
-            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary font-bold text-xl flex-shrink-0 shadow-lg">
-                <i class="fa-solid fa-bowl-food"></i>
-            </div>
-            <h1 class="font-bold text-lg hidden md:block leading-tight">ຮ້ານເຝີເຮືອ<br>3ໃບເຂົາ</h1>
+<!-- ===== SIDEBAR ===== -->
+<aside class="w-14 md:w-60 bg-primary flex flex-col flex-shrink-0 z-30 overflow-hidden shadow-xl">
+
+    <!-- Brand -->
+    <div class="flex items-center gap-3 px-3 py-4 border-b border-white/10">
+        <div class="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-primary font-black text-lg flex-shrink-0 shadow">
+            <i class="fa-solid fa-bowl-food"></i>
         </div>
-        
-        <nav class="flex-1 mt-4 overflow-y-auto no-scrollbar">
-            <ul class="space-y-2 px-2">
-                <?php if ($_SESSION['Role'] == 'admin'): ?>
-                    <li class="text-[10px] uppercase text-orange-300/50 font-bold px-3 mt-4 mb-1 hidden md:block">Main POS</li>
-                <?php endif; ?>
-                
-                <li>
-                    <button onclick="app.switchPage('pos')" id="nav-pos" class="w-full flex items-center p-3 rounded-lg bg-orange-900/50 text-white transition-colors">
-                        <i class="fa-solid fa-cash-register w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">ขายอาหาร (POS)</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('dashboard')" id="nav-dashboard" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-chart-pie w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block"><?php echo ($_SESSION['Role'] == 'admin') ? 'สรุปยอดขาย' : 'รายการรอเสิร์ฟ'; ?></span>
-                    </button>
-                </li>
+        <div class="hidden md:block leading-tight">
+            <p class="text-white font-black text-sm">ຮ້ານເຝີເຮືອ</p>
+            <p class="text-orange-200 text-xs">3ໃບເຂົາ</p>
+        </div>
+    </div>
 
-                <?php if ($_SESSION['Role'] == 'staff'): ?>
-                <li>
-                    <button onclick="app.switchPage('material-requisition')" id="nav-material-requisition" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-hand-holding-hand w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">เบิกใช้วัตถุดิบ</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('customers')" id="nav-customers" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-users w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">ข้อมูลลูกค้า</span>
-                    </button>
-                </li>
-                <?php endif; ?>
-                
-                <?php if ($_SESSION['Role'] == 'admin'): ?>
-                <!-- กลุ่มข้อมูลพื้นฐาน -->
-                <li class="text-[10px] uppercase text-orange-300/50 font-bold px-3 mt-4 mb-1 hidden md:block">Master Data</li>
-                <li>
-                    <button onclick="app.switchPage('menu')" id="nav-menu" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-utensils w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">จัดการเมนู</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('product-types')" id="nav-product-types" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-tags w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">ประเภทสินค้า</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('material-types')" id="nav-material-types" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-boxes-stacked w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">ประเภทวัตถุดิบ</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('employees')" id="nav-employees" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-id-card w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">ข้อมูลพนักงาน</span>
-                    </button>
-                </li>
+    <!-- User Info -->
+    <div class="hidden md:flex items-center gap-2.5 px-3 py-3 border-b border-white/10 bg-black/10">
+        <div class="w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+            <?php echo mb_strtoupper(mb_substr($_SESSION['Emp_name'], 0, 1, 'UTF-8')); ?>
+        </div>
+        <div class="min-w-0 flex-1">
+            <p class="text-white text-xs font-bold truncate"><?php echo htmlspecialchars($_SESSION['Emp_name']); ?></p>
+            <?php if ($_SESSION['Role'] == 'admin'): ?>
+                <span class="badge-admin mt-0.5 inline-block">⚙ ຜູ້ດູແລ</span>
+            <?php else: ?>
+                <span class="badge-staff mt-0.5 inline-block">👤 ພະນັກງານ</span>
+            <?php endif; ?>
+        </div>
+    </div>
 
-                <!-- กลุ่มวัตถุดิบ -->
-                <li class="text-[10px] uppercase text-orange-300/50 font-bold px-3 mt-4 mb-1 hidden md:block">Inventory</li>
-                <li>
-                    <button onclick="app.switchPage('materials')" id="nav-materials" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-box-open w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">สต็อกวัตถุดิบ</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('material-order')" id="nav-material-order" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-cart-plus w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">สั่งซื้อวัตถุดิบ</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('material-admit')" id="nav-material-admit" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-truck-ramp-box w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">รับเข้าวัตถุดิบ</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('material-requisition')" id="nav-material-requisition" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-hand-holding-hand w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">เบิกใช้วัตถุดิบ</span>
-                    </button>
-                </li>
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto no-scrollbar px-2 py-3 space-y-0.5">
 
-                <!-- กลุ่มการเงินและรายงาน -->
-                <li class="text-[10px] uppercase text-orange-300/50 font-bold px-3 mt-4 mb-1 hidden md:block">Finance & Reports</li>
-                <li>
-                    <button onclick="app.switchPage('finance')" id="nav-finance" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-money-bill-transfer w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">รายรับ - รายจ่าย</span>
-                    </button>
-                </li>
-                <li>
-                    <button onclick="app.switchPage('reports')" id="nav-reports" class="w-full flex items-center p-3 rounded-lg hover:bg-orange-800 text-orange-200 transition-colors">
-                        <i class="fa-solid fa-file-contract w-6 text-center text-xl"></i>
-                        <span class="ml-3 hidden md:block">ออกรายงาน</span>
-                    </button>
-                </li>
-                <?php endif; ?>
+        <!-- MAIN -->
+        <p class="hidden md:block text-[9px] font-black text-orange-300/60 uppercase tracking-widest px-2 pt-2 pb-1">ຫຼັກ</p>
+        <button onclick="app.switchPage('pos')" id="nav-pos"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/20 text-white font-bold text-sm">
+            <i class="fa-solid fa-cash-register w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ຂາຍອາຫານ (POS)</span>
+        </button>
+        <button onclick="app.switchPage('dashboard')" id="nav-dashboard"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-chart-pie w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block"><?php echo ($_SESSION['Role'] == 'admin') ? 'ສະຫຼຸບຍອດຂາຍ' : 'ລາຍການລໍຖ້າເສີບ'; ?></span>
+        </button>
+        <button onclick="app.switchPage('customers')" id="nav-customers"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-users w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ຂໍ້ມູນລູກຄ້າ</span>
+        </button>
 
-            </ul>
-        </nav>
-        
-        <a href="logout.php" class="p-4 border-t border-orange-900/50 text-orange-200 hover:bg-red-800 hover:text-white transition-all flex items-center justify-center md:justify-start gap-3">
-            <i class="fa-solid fa-right-from-bracket text-xl w-6 text-center"></i>
-            <span class="hidden md:block font-bold text-sm">ออกจากระบบ</span>
-        </a>
-    </aside>
+        <?php if ($_SESSION['Role'] == 'staff'): ?>
+        <button onclick="app.switchPage('material-requisition')" id="nav-material-requisition"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-hand-holding-hand w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ເບີກໃຊ້ວັດຖຸດິບ</span>
+        </button>
+        <?php endif; ?>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col w-full min-h-screen overflow-x-hidden relative">
-        
-        <!-- Header -->
-        <header class="bg-white shadow-sm px-3 sm:px-4 py-2 sm:py-4 flex justify-between items-center z-10 flex-shrink-0">
-            <h2 id="page-title" class="text-lg sm:text-xl font-bold text-gray-800 truncate">จุดรับออร์เดอร์ (POS)</h2>
-            <div class="text-gray-500 text-xs sm:text-sm md:text-base whitespace-nowrap ml-2" id="current-time">
-                <!-- เวลาจะแสดงที่นี่ -->
-            </div>
-        </header>
+        <?php if ($_SESSION['Role'] == 'admin'): ?>
+        <!-- MASTER DATA -->
+        <p class="hidden md:block text-[9px] font-black text-orange-300/60 uppercase tracking-widest px-2 pt-4 pb-1">ຂໍ້ມູນຫຼັກ</p>
+        <button onclick="app.switchPage('menu')" id="nav-menu"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-utensils w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ຈັດການເມນູ</span>
+        </button>
+        <button onclick="app.switchPage('product-types')" id="nav-product-types"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-tags w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ປະເພດສິນຄ້າ</span>
+        </button>
+        <button onclick="app.switchPage('material-types')" id="nav-material-types"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-boxes-stacked w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ປະເພດວັດຖຸດິບ</span>
+        </button>
+        <button onclick="app.switchPage('employees')" id="nav-employees"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-id-card w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ຂໍ້ມູນພະນັກງານ</span>
+        </button>
 
-        <!-- Container สำหรับแต่ละหน้า -->
-        <div id="content-container" class="flex-1 relative w-full h-full overflow-hidden bg-gray-100">
+        <!-- INVENTORY -->
+        <p class="hidden md:block text-[9px] font-black text-orange-300/60 uppercase tracking-widest px-2 pt-4 pb-1">ສາງສິນຄ້າ</p>
+        <button onclick="app.switchPage('materials')" id="nav-materials"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-box-open w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ສະຕ໋ອກວັດຖຸດິບ</span>
+        </button>
+        <button onclick="app.switchPage('material-order')" id="nav-material-order"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-cart-plus w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ສັ່ງຊື້ວັດຖຸດິບ</span>
+        </button>
+        <button onclick="app.switchPage('material-admit')" id="nav-material-admit"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-truck-ramp-box w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ຮັບເຂົ້າວັດຖຸດິບ</span>
+        </button>
+        <button onclick="app.switchPage('material-requisition')" id="nav-material-requisition"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-hand-holding-hand w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ເບີກໃຊ້ວັດຖຸດິບ</span>
+        </button>
+
+        <!-- FINANCE -->
+        <p class="hidden md:block text-[9px] font-black text-orange-300/60 uppercase tracking-widest px-2 pt-4 pb-1">ການເງິນ & ລາຍງານ</p>
+        <button onclick="app.switchPage('finance')" id="nav-finance"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-money-bill-transfer w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ລາຍຮັບ - ລາຍຈ່າຍ</span>
+        </button>
+        <button onclick="app.switchPage('reports')" id="nav-reports"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-file-contract w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ລາຍງານ</span>
+        </button>
+
+        <!-- SETTINGS -->
+        <p class="hidden md:block text-[9px] font-black text-orange-300/60 uppercase tracking-widest px-2 pt-4 pb-1">ລະບົບ</p>
+        <button onclick="app.switchPage('settings')" id="nav-settings"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-orange-100 hover:bg-white/10 hover:text-white text-sm transition-colors">
+            <i class="fa-solid fa-gear w-5 text-center flex-shrink-0"></i>
+            <span class="hidden md:block">ຕັ້ງຄ່າລະບົບ</span>
+        </button>
+        <?php endif; ?>
+
+    </nav>
+
+    <!-- Logout -->
+    <a href="logout.php" class="flex items-center gap-3 px-3 py-3.5 border-t border-white/10 text-orange-200 hover:bg-red-900/50 hover:text-white transition-all">
+        <i class="fa-solid fa-right-from-bracket w-5 text-center flex-shrink-0"></i>
+        <span class="hidden md:block text-sm font-medium">ອອກຈາກລະບົບ</span>
+    </a>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-100 px-4 sm:px-6 py-3 flex justify-between items-center z-10 flex-shrink-0">
+        <h2 id="page-title" class="text-base sm:text-lg font-bold text-slate-800 truncate">ຂາຍອາຫານ (POS)</h2>
+        <div class="text-slate-500 text-xs sm:text-sm whitespace-nowrap ml-2 font-medium" id="current-time"></div>
+    </header>
+
+    <!-- Page Container -->
+    <div id="content-container" class="flex-1 relative w-full overflow-hidden bg-slate-100">

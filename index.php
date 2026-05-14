@@ -38,8 +38,10 @@ $mat_types = $stmt_mat_type->fetchAll();
     include_once 'pages/pos.php';
     include_once 'pages/dashboard.php';
     include_once 'pages/customers.php';
+    include_once 'pages/material_requisition.php';
+    include_once 'pages/material_admit.php';
 
-    // หน้าเฉพาะ Admin: จำกัดการโหลดไฟล์เพื่อความปลอดภัยและประสิทธิภาพ
+    // หน้าเฉพาะ Admin เท่านั้น
     if ($_SESSION['Role'] == 'admin') {
         include_once 'pages/menu.php';
         include_once 'pages/employees.php';
@@ -48,10 +50,9 @@ $mat_types = $stmt_mat_type->fetchAll();
         include_once 'pages/material_types.php';
         include_once 'pages/materials.php';
         include_once 'pages/material_order.php';
-        include_once 'pages/material_admit.php';
         include_once 'pages/product_types.php';
+        include_once 'pages/settings.php';
     }
-    include_once 'pages/material_requisition.php'; 
 ?>
 
 <?php include_once 'includes/footer.php'; ?>

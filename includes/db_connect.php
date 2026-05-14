@@ -1,27 +1,31 @@
 <?php
-// การตั้งค่าฐานข้อมูล (สำหรับ XAMPP)
-$host     = "localhost";
-$username = "root";
-$password = "";
-$dbname   = "3baikhao";
+/**
+ * Database Connection using PDO
+ * Professional approach: Use constants and Error Handling
+ */
 
-// ตั้งค่าเขตเวลาให้ตรงกับไทย
-date_default_timezone_set('Asia/Bangkok');
+define('DB_HOST', 'localhost');
+define('DB_NAME', '3baikhao');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('TIMEZONE', 'Asia/Bangkok');
+
+date_default_timezone_set(TIMEZONE);
 
 try {
-    // สร้างการเชื่อมต่อด้วย PDO
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password, [
+    $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+    $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
-    ]);
-    
-    // ตัวแปรเชื่อมต่อสำเร็จ (สำหรับใช้งานในไฟล์อื่น)
-    $conn = $pdo;
+    ];
 
+    $conn = new PDO($dsn, DB_USER, DB_PASS, $options);
+    
 } catch (PDOException $e) {
-    // หากเชื่อมต่อไม่ได้ (เช่น ยังไม่ได้สร้าง Database) จะยังไม่ให้ระบบพัง แต่เก็บ Error ไว้ตรวจสอบ
-    // error_log("Database Connection Error: " . $e->getMessage());
+    // In production, log error instead of echoing
+    error_log("Connection failed: " . $e->getMessage());
     $conn = null;
+    die("ขออภัย ระบบขัดข้องทางเทคนิค กรุณาลองใหม่ภายหลัง");
 }
 ?>

@@ -1,5 +1,7 @@
 <?php
 header('Content-Type: application/json');
+require_once '../includes/auth_check.php';
+require_admin();
 require_once '../includes/db_connect.php';
 
 $json = file_get_contents('php://input');
@@ -13,8 +15,9 @@ if (!$data || empty($data['name']) || empty($data['amount']) || empty($data['typ
 try {
     $name = $data['name'];
     $amount = (float)$data['amount'];
-    $type_id = (int)$data['type_id']; // 1 = รายรับ, 2 = รายจ่าย
-    $date = date('Y-m-d');
+    $type_id = (int)$data['type_id'];
+    $raw_date = $data['date'] ?? '';
+    $date = (preg_match('/^\d{4}-\d{2}-\d{2}$/', $raw_date)) ? $raw_date : date('Y-m-d');
 
     // ตรวจสอบว่ามีรหัสประเภทใน revenueh_db หรือยัง (ถ้าไม่มีให้ข้ามหรือสร้างใหม่)
     // ในที่นี้เราจะบันทึกลง revenued_db โดยตรง

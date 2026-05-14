@@ -1,5 +1,7 @@
 <?php
 header('Content-Type: application/json');
+require_once '../includes/auth_check.php';
+require_login();
 require_once '../includes/db_connect.php';
 
 if (!isset($_GET['id'])) {

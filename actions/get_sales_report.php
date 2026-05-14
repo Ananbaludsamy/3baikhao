@@ -1,5 +1,7 @@
 <?php
 header('Content-Type: application/json');
+require_once '../includes/auth_check.php';
+require_admin();
 require_once '../includes/db_connect.php';
 
 if (!$conn) {
@@ -10,10 +12,10 @@ if (!$conn) {
 try {
     // 1. ดึงสถิติของวันนี้
     $today = date('Y-m-d');
-    $stmt_stats = $conn->prepare("SELECT 
-                                    COALESCE(SUM(Sale_sumprice), 0) as total_sales, 
-                                    COUNT(Sale_id) as total_orders 
-                                  FROM saleh_db WHERE Sale_date = ?");
+    $stmt_stats = $conn->prepare("SELECT
+                                    COALESCE(SUM(Sale_sumprice), 0) as total_sales,
+                                    COUNT(Sale_id) as total_orders
+                                  FROM saleh_db WHERE DATE(Sale_date) = ?");
     $stmt_stats->execute([$today]);
     $stats = $stmt_stats->fetch();
 
@@ -41,10 +43,10 @@ try {
     $top5_products = $stmt_top5->fetchAll();
 
     // 4. แนวโน้มยอดขาย 7 วันล่าสุด (สำหรับกราฟเส้น)
-    $stmt_trend = $conn->query("SELECT Sale_date, SUM(Sale_sumprice) as total 
-                                FROM saleh_db 
-                                WHERE Sale_date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
-                                GROUP BY Sale_date ORDER BY Sale_date ASC");
+    $stmt_trend = $conn->query("SELECT DATE(Sale_date) as Sale_date, SUM(Sale_sumprice) as total
+                                FROM saleh_db
+                                WHERE DATE(Sale_date) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+                                GROUP BY DATE(Sale_date) ORDER BY DATE(Sale_date) ASC");
     $weekly_trend = $stmt_trend->fetchAll();
 
     // 5. ยอดขายแยกตามหมวดหมู่ (สำหรับกราฟวงกลม)
