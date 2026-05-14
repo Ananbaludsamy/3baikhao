@@ -51,6 +51,9 @@
                     class="btn-primary" style="padding:7px 14px;font-size:12px;">
                     <i class="fa-solid fa-eye"></i> ເບິ່ງ
                 </button>
+                <a id="export-daily-sales-btn" href="#" target="_blank" class="btn-secondary" style="padding:7px 12px;font-size:12px;text-decoration:none;" title="Export CSV">
+                    <i class="fa-solid fa-file-csv text-green-600"></i> Export
+                </a>
                 <button onclick="document.getElementById('daily-sales-panel').classList.add('hidden')"
                     class="text-slate-400 hover:text-slate-600 transition-colors">
                     <i class="fa-solid fa-times text-lg"></i>
@@ -100,6 +103,9 @@
                 <button onclick="app.loadStockReport()" class="btn-secondary" style="padding:6px 12px;font-size:12px;">
                     <i class="fa-solid fa-rotate"></i> ໂຫຼດໃໝ່
                 </button>
+                <a href="actions/export_stock_csv.php" target="_blank" class="btn-secondary" style="padding:6px 12px;font-size:12px;text-decoration:none;" title="Export CSV">
+                    <i class="fa-solid fa-file-csv text-green-600"></i> Export
+                </a>
                 <button onclick="document.getElementById('stock-report-panel').classList.add('hidden')"
                     class="text-slate-400 hover:text-slate-600 transition-colors">
                     <i class="fa-solid fa-times text-lg"></i>

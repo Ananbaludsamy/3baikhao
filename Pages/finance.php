@@ -13,9 +13,9 @@
                     class="form-input text-sm" style="padding:7px 12px;width:auto;"
                     value="<?php echo date('Y-m'); ?>"
                     onchange="app.loadFinance(this.value)">
-                <a href="actions/export_finance_csv.php" target="_blank"
+                <a id="export-finance-btn" href="actions/export_finance_csv.php?month=<?php echo date('Y-m'); ?>" target="_blank"
                     class="btn-secondary" style="padding:7px 14px;font-size:12px;text-decoration:none;">
-                    <i class="fa-solid fa-file-excel text-green-600 mr-1"></i> Export CSV
+                    <i class="fa-solid fa-file-csv text-green-600 mr-1"></i> Export CSV
                 </a>
             </div>
         </div>

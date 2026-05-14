@@ -177,7 +177,25 @@
     <!-- Top Header -->
     <header class="bg-white border-b border-slate-100 px-4 sm:px-6 py-3 flex justify-between items-center z-10 flex-shrink-0">
         <h2 id="page-title" class="text-base sm:text-lg font-bold text-slate-800 truncate">ຂາຍອາຫານ (POS)</h2>
-        <div class="text-slate-500 text-xs sm:text-sm whitespace-nowrap ml-2 font-medium" id="current-time"></div>
+        <div class="flex items-center gap-3 ml-2">
+            <!-- Stock Alert Bell -->
+            <div class="relative" id="stock-alert-wrapper">
+                <button onclick="app.toggleStockAlert()" id="stock-alert-btn"
+                    class="relative w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-bell text-slate-500 text-sm" id="stock-bell-icon"></i>
+                    <span id="stock-alert-badge"
+                        style="display:none;position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;background:#ef4444;color:white;font-size:10px;font-weight:900;border-radius:9999px;align-items:center;justify-content:center;padding:0 4px;line-height:1;white-space:nowrap;"></span>
+                </button>
+                <!-- Dropdown -->
+                <div id="stock-alert-dropdown"
+                    class="hidden absolute right-0 top-11 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden">
+                    <div id="stock-alert-content">
+                        <div class="p-4 text-center text-slate-400 text-sm">ກໍາລັງໂຫຼດ...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-slate-500 text-xs sm:text-sm whitespace-nowrap font-medium" id="current-time"></div>
+        </div>
     </header>
 
     <!-- Page Container -->

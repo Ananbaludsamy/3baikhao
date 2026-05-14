@@ -51,8 +51,10 @@
                 this.loadPosCustomers();
                 this.switchPage(state.currentPage);
                 this.loadCustomers();
+                this.loadStockAlert();
                 setInterval(() => { this.updateTime(); this.renderTableSelection(); }, 1000);
                 setInterval(() => this.renderTableSelection(), 10000);
+                setInterval(() => this.loadStockAlert(), 5 * 60 * 1000);
             },
 
             formatCurrency: function(amount) {
@@ -1153,6 +1155,8 @@
             // ================= ส่วนจัดการการเงิน (Finance Functions) =================
             loadFinance: function(month) {
                 const m = month || document.getElementById('fin-month-picker')?.value || new Date().toISOString().slice(0,7);
+                const exportBtn = document.getElementById('export-finance-btn');
+                if (exportBtn) exportBtn.href = `actions/export_finance_csv.php?month=${m}`;
                 const tbody = document.getElementById('finance-table-body');
                 if (tbody) tbody.innerHTML = '<tr class="table-row"><td colspan="5" class="text-center text-slate-400 py-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>ກໍາລັງໂຫຼດ...</td></tr>';
 
@@ -1689,6 +1693,7 @@
                         this.showToast(result.message);
                         document.getElementById('admit-form').reset();
                         this.loadMaterials();
+                        this.loadStockAlert();
                     } else {
                         this.showToast(result.message, 'error');
                     }
@@ -2089,6 +2094,95 @@
                 this.loadStockReport();
             },
 
+            loadStockAlert: function() {
+                fetch('actions/get_stock_report.php')
+                .then(r => r.json())
+                .then(result => {
+                    if (!result.success) return;
+                    const lowCount = result.low_count  || 0;
+                    const medCount = result.medium_count || 0;
+                    const total    = lowCount + medCount;
+
+                    const badge    = document.getElementById('stock-alert-badge');
+                    const bellIcon = document.getElementById('stock-bell-icon');
+                    if (badge) {
+                        if (total > 0) {
+                            badge.innerText = total > 9 ? '9+' : total;
+                            badge.style.background = lowCount > 0 ? '#ef4444' : '#f59e0b';
+                            badge.style.display = 'inline-flex';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                    if (bellIcon) {
+                        bellIcon.className = lowCount > 0
+                            ? 'fa-solid fa-bell text-red-500 text-sm'
+                            : medCount > 0
+                            ? 'fa-solid fa-bell text-yellow-500 text-sm'
+                            : 'fa-solid fa-bell text-slate-500 text-sm';
+                    }
+
+                    const content = document.getElementById('stock-alert-content');
+                    if (!content) return;
+                    const criticals = (result.materials || []).filter(m => parseFloat(m.Material_total) <= 5);
+                    const warnings  = (result.materials || []).filter(m => parseFloat(m.Material_total) > 5 && parseFloat(m.Material_total) <= 10);
+                    const items = [...criticals, ...warnings].slice(0, 12);
+
+                    let html = `<div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                        <span class="font-bold text-slate-700 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1.5 ${lowCount > 0 ? 'text-red-500' : 'text-yellow-500'}"></i>ສະຕ໋ອກໃກ້ໝົດ</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded-full ${total > 0 ? (lowCount > 0 ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700') : 'bg-green-100 text-green-700'}">${total > 0 ? total + ' ລາຍການ' : 'ປົກກະຕິ ✓'}</span>
+                    </div>`;
+
+                    if (items.length === 0) {
+                        html += `<div class="px-4 py-6 text-center">
+                            <i class="fa-solid fa-circle-check text-green-400 text-2xl mb-2 block"></i>
+                            <p class="text-sm text-slate-500 font-medium">ສະຕ໋ອກທຸກລາຍການປົກກະຕິ</p>
+                        </div>`;
+                    } else {
+                        html += `<div class="max-h-60 overflow-y-auto divide-y divide-slate-50">`;
+                        items.forEach(m => {
+                            const qty  = parseFloat(m.Material_total);
+                            const isCrit = qty <= 5;
+                            html += `<div class="px-4 py-2.5 flex items-center justify-between hover:bg-slate-50">
+                                <div class="min-w-0 flex-1 mr-2">
+                                    <p class="text-sm font-medium text-slate-700 truncate">${m.Material_name}</p>
+                                    <p class="text-xs text-slate-400">${m.MaterialType_name}</p>
+                                </div>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${isCrit ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700'}">${qty} ${m.Material_unit}</span>
+                            </div>`;
+                        });
+                        html += `</div>`;
+                        if (total > 12) html += `<p class="text-center text-xs text-slate-400 py-1">ແລະ ${total - 12} ລາຍການອື່ນ...</p>`;
+                    }
+                    html += `<div class="p-2 border-t border-slate-100">
+                        <button onclick="app.toggleStockAlert(); app.switchPage('reports'); setTimeout(() => app.showStockReportPanel(), 400);"
+                            class="w-full text-center text-xs text-primary font-bold py-2 hover:bg-orange-50 rounded-xl transition-colors">
+                            ເບິ່ງລາຍງານສະຕ໋ອກທັງໝົດ →
+                        </button>
+                    </div>`;
+                    content.innerHTML = html;
+                })
+                .catch(() => {});
+            },
+
+            toggleStockAlert: function() {
+                const dropdown = document.getElementById('stock-alert-dropdown');
+                if (!dropdown) return;
+                const isHidden = dropdown.classList.contains('hidden');
+                dropdown.classList.toggle('hidden');
+                if (isHidden) {
+                    this.loadStockAlert();
+                    const handler = (e) => {
+                        const wrapper = document.getElementById('stock-alert-wrapper');
+                        if (wrapper && !wrapper.contains(e.target)) {
+                            dropdown.classList.add('hidden');
+                            document.removeEventListener('click', handler);
+                        }
+                    };
+                    setTimeout(() => document.addEventListener('click', handler), 50);
+                }
+            },
+
             renderDashboardSales: function() {
                 const tbody = document.getElementById('order-history-table');
                 if (!tbody) return;
@@ -2126,6 +2220,8 @@
                 if (!tbody) return;
                 tbody.innerHTML = '<tr class="table-row"><td colspan="5" class="text-center text-slate-400 py-6">ກໍາລັງໂຫຼດ...</td></tr>';
                 const d = date || new Date().toISOString().split('T')[0];
+                const exportBtn = document.getElementById('export-daily-sales-btn');
+                if (exportBtn) exportBtn.href = `actions/export_daily_sales_csv.php?date=${d}`;
                 fetch(`actions/get_daily_sales.php?date=${d}`)
                 .then(r => r.json())
                 .then(result => {
