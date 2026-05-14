@@ -45,7 +45,7 @@
         </div>
         <?php endif; ?>
 
-        <form action="actions/auth_login.php" method="POST" style="display:flex;flex-direction:column;gap:1.1rem;">
+        <form action="actions/auth/auth_login.php" method="POST" style="display:flex;flex-direction:column;gap:1.1rem;">
             <div>
                 <label>ຊື່ຜູ້ໃຊ້ (Username)</label>
                 <div class="input-wrap">

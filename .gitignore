@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+dist/output.css
+
+# Claude AI
+.claude/
+
+# Config / sensitive
+config/shop_settings.json
+
+# Uploaded files
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

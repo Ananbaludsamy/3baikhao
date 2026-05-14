@@ -226,7 +226,7 @@
             },
 
             loadPosCustomers: function() {
-                fetch('actions/get_customers.php')
+                fetch('actions/customers/get_customers.php')
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -348,7 +348,7 @@
                 if (!grid) return;
 
                 try {
-                    const response = await fetch('actions/get_pending_orders.php');
+                    const response = await fetch('actions/orders/get_pending_orders.php');
                     const result = await response.json();
                     // Assuming result.data now contains objects like { table_no: '1', cus_id: '123', ... }
                     state.occupiedTablesWithCustomers = result.success ? result.data : [];
@@ -501,7 +501,7 @@
                 };
 
                 // ส่งข้อมูลด้วย fetch ไปที่ save_sale.php
-                fetch('actions/save_sale.php', {
+                fetch('actions/pos/save_sale.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(postData)
@@ -543,7 +543,7 @@
                         
                         // เปิดหน้าพิมพ์ใบเสร็จอัตโนมัติ
                         const change = received - totalAmount;
-                        window.open(`print_receipt.php?id=${result.sale_id}&cash=${received}&change=${change}&table=${tableNo}`, '_blank', 'width=360,height=520');
+                        window.open(`pages/print_receipt.php?id=${result.sale_id}&cash=${received}&change=${change}&table=${tableNo}`, '_blank', 'width=360,height=520');
 
                         // เปลี่ยนหน้าไปยังหน้า รายการอาหารรอเสิร์ฟ (Dashboard) ทันที
                         window.app.switchPage('dashboard');
@@ -567,7 +567,7 @@
             },
 
             updateDashboard: function() {
-                fetch('actions/get_sales_report.php')
+                fetch('actions/reports/get_sales_report.php')
                 .then(response => response.json())
                 .then(result => {
                     if (!result.success) {
@@ -668,7 +668,7 @@
                 formData.append('cat', cat);
                 if (imgFile) formData.append('img', imgFile);
 
-                const url = id ? 'actions/update_product.php' : 'actions/add_product.php';
+                const url = id ? 'actions/products/update_product.php' : 'actions/products/add_product.php';
 
                 fetch(url, {
                     method: 'POST',
@@ -736,7 +736,7 @@
             deleteProduct: function(id) {
                 if (!confirm('ຢືນຢັນການລຶບເມນູນີ້ອອກຈາກລະບົບ?')) return;
 
-                fetch('actions/delete_product.php', {
+                fetch('actions/products/delete_product.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: id })
@@ -816,7 +816,7 @@
             },
 
             loadCustomers: function() {
-                fetch('actions/get_customers.php')
+                fetch('actions/customers/get_customers.php')
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -933,7 +933,7 @@
                 if (!address) { this.showToast('ກະລຸນາປ້ອນທີ່ຢູ່', 'error'); document.getElementById('cus-address').focus(); return; }
 
                 const postData = { cus_id: cusId, name, level, tel, address };
-                const url = cusId ? 'actions/update_customer.php' : 'actions/add_customer.php';
+                const url = cusId ? 'actions/customers/update_customer.php' : 'actions/customers/add_customer.php';
 
                 fetch(url, {
                     method: 'POST',
@@ -957,7 +957,7 @@
             },
 
             editCustomer: function(cusId) {
-                fetch(`actions/get_customer_by_id.php?id=${cusId}`)
+                fetch(`actions/customers/get_customer_by_id.php?id=${cusId}`)
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -985,7 +985,7 @@
             deleteCustomer: function(cusId) {
                 if (!confirm('ຢືນຢັນການລຶບຂໍ້ມູນລູກຄ້າທ່ານນີ້?')) return;
 
-                fetch('actions/delete_customer.php', {
+                fetch('actions/customers/delete_customer.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cus_id: cusId })
@@ -1007,7 +1007,7 @@
 
             // ================= ส่วนจัดการข้อมูลพนักงาน (Employee Functions) =================
             loadEmployees: function() {
-                fetch('actions/get_employees.php')
+                fetch('actions/employees/get_employees.php')
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -1074,7 +1074,7 @@
                 }
 
                 const postData = { emp_id: empId, name, card, address, tel, gender, username, password, role };
-                const url = empId ? 'actions/update_employee.php' : 'actions/add_employee.php';
+                const url = empId ? 'actions/employees/update_employee.php' : 'actions/employees/add_employee.php';
 
                 fetch(url, {
                     method: 'POST',
@@ -1098,7 +1098,7 @@
             },
 
             editEmployee: function(empId) {
-                fetch(`actions/get_employee_by_id.php?id=${empId}`)
+                fetch(`actions/employees/get_employee_by_id.php?id=${empId}`)
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -1132,7 +1132,7 @@
             deleteEmployee: function(empId) {
                 if (!confirm('ຢືນຢັນການລຶບພະນັກງານທ່ານນີ້?')) return;
 
-                fetch('actions/delete_employee.php', {
+                fetch('actions/employees/delete_employee.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ emp_id: empId })
@@ -1156,11 +1156,11 @@
             loadFinance: function(month) {
                 const m = month || document.getElementById('fin-month-picker')?.value || new Date().toISOString().slice(0,7);
                 const exportBtn = document.getElementById('export-finance-btn');
-                if (exportBtn) exportBtn.href = `actions/export_finance_csv.php?month=${m}`;
+                if (exportBtn) exportBtn.href = `actions/reports/export_finance_csv.php?month=${m}`;
                 const tbody = document.getElementById('finance-table-body');
                 if (tbody) tbody.innerHTML = '<tr class="table-row"><td colspan="5" class="text-center text-slate-400 py-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>ກໍາລັງໂຫຼດ...</td></tr>';
 
-                fetch(`actions/get_finance.php?month=${m}`)
+                fetch(`actions/finance/get_finance.php?month=${m}`)
                 .then(res => res.json())
                 .then(result => {
                     if (!result.success) return;
@@ -1263,7 +1263,7 @@
                 const btn = document.getElementById('fin-submit-btn');
                 if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>ກໍາລັງບັນທຶກ...'; }
 
-                fetch('actions/save_finance.php', {
+                fetch('actions/finance/save_finance.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ type_id, name, amount, date })
@@ -1287,7 +1287,7 @@
             deleteFinance: async function(id) {
                 if (!confirm('ຢືນຢັນລຶບລາຍການນີ້?')) return;
                 try {
-                    const res = await fetch('actions/delete_finance.php', {
+                    const res = await fetch('actions/finance/delete_finance.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id })
@@ -1306,7 +1306,7 @@
 
             // ================= ส่วนจัดการประเภทวัตถุดิบ (Material Types Functions) =================
             loadMaterialTypes: function() {
-                fetch('actions/get_material_types.php')
+                fetch('actions/materials/get_material_types.php')
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -1367,7 +1367,7 @@
                     return;
                 }
 
-                const url = id ? 'actions/update_material_type.php' : 'actions/add_material_type.php';
+                const url = id ? 'actions/materials/update_material_type.php' : 'actions/materials/add_material_type.php';
                 const postData = id ? { id: id, name: name } : { name: name };
 
                 fetch(url, {
@@ -1407,7 +1407,7 @@
             deleteMaterialType: function(id) {
                 if (!confirm('ຢືນຢັນການລຶບປະເພດວັດຖຸດິບນີ້?')) return;
 
-                fetch('actions/delete_material_type.php', {
+                fetch('actions/materials/delete_material_type.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: id })
@@ -1431,7 +1431,7 @@
 
             // ================= ส่วนจัดการประเภทสินค้า (Product Type Functions) =================
             loadProductTypes: function() {
-                fetch('actions/get_product_types.php')
+                fetch('actions/products/get_product_types.php')
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -1489,7 +1489,7 @@
                     return;
                 }
 
-                const url = id ? 'actions/update_product_type.php' : 'actions/add_product_type.php';
+                const url = id ? 'actions/products/update_product_type.php' : 'actions/products/add_product_type.php';
                 const postData = id ? { id, name } : { name };
 
                 fetch(url, {
@@ -1530,7 +1530,7 @@
             deleteProductType: function(id) {
                 if (!confirm('ຢືນຢັນການລຶບປະເພດສິນຄ້ານີ້?')) return;
 
-                fetch('actions/delete_product_type.php', {
+                fetch('actions/products/delete_product_type.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id })
@@ -1551,7 +1551,7 @@
                 const month = document.getElementById('report-month')?.value || new Date().getMonth() + 1;
                 const year = document.getElementById('report-year')?.value || new Date().getFullYear();
 
-                fetch(`actions/get_monthly_sales.php?year=${year}&month=${month}`)
+                fetch(`actions/reports/get_monthly_sales.php?year=${year}&month=${month}`)
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -1594,7 +1594,7 @@
                         // อัปเดตลิงก์ Export CSV
                         const exportBtn = document.getElementById('export-monthly-sales-btn');
                         if (exportBtn) {
-                            exportBtn.href = `actions/export_monthly_sales_csv.php?year=${year}&month=${month}`;
+                            exportBtn.href = `actions/reports/export_monthly_sales_csv.php?year=${year}&month=${month}`;
                         }
 
                     } else {
@@ -1609,7 +1609,7 @@
 
             // ================= ส่วนจัดการวัตถุดิบ (Material Functions) =================
             loadMaterials: function() {
-                fetch('actions/get_materials.php')
+                fetch('actions/materials/get_materials.php')
                 .then(res => res.json())
                 .then(result => {
                     if (result.success) {
@@ -1659,7 +1659,7 @@
                 const qty = document.getElementById('req-qty').value;
                 const note = document.getElementById('req-note').value;
 
-                fetch('actions/save_requisition.php', {
+                fetch('actions/materials/save_requisition.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mat_id, qty, note })
@@ -1682,7 +1682,7 @@
                 const qty = document.getElementById('admit-qty').value;
                 const price = document.getElementById('admit-price').value;
 
-                fetch('actions/save_admit.php', {
+                fetch('actions/materials/save_admit.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mat_id, qty, price })
@@ -1708,7 +1708,7 @@
                 const cost = document.getElementById('mat-cost').value;
                 const unit = document.getElementById('mat-unit').value;
 
-                const url = id ? 'actions/update_material.php' : 'actions/add_material.php';
+                const url = id ? 'actions/materials/update_material.php' : 'actions/materials/add_material.php';
                 
                 fetch(url, {
                     method: 'POST',
@@ -1754,7 +1754,7 @@
             deleteMaterial: function(id) {
                 if (!confirm('ຢືນຢັນການລຶບວັດຖຸດິບນີ້? ຂໍ້ມູນສະຕ໋ອກຈະຫາຍໄປ')) return;
 
-                fetch('actions/delete_material.php', {
+                fetch('actions/materials/delete_material.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id })
@@ -1869,7 +1869,7 @@
 
             // ================= Settings =================
             loadSettings: function() {
-                fetch('actions/get_settings.php')
+                fetch('actions/settings/get_settings.php')
                 .then(r => r.json())
                 .then(result => {
                     if (!result.success) return;
@@ -1912,7 +1912,7 @@
                     shop_phone: document.getElementById('setting-shop-phone').value,
                     shop_address: document.getElementById('setting-shop-address').value
                 };
-                fetch('actions/save_settings.php', {
+                fetch('actions/settings/save_settings.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -1951,7 +1951,7 @@
                 if (data.earn_rate < 1) {
                     this.showToast('ອັດຕາສະສົມຄະແນນຕ້ອງ > 0', 'error'); return;
                 }
-                fetch('actions/save_settings.php', {
+                fetch('actions/settings/save_settings.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -2028,7 +2028,7 @@
                 // Load history
                 const tbody = document.getElementById('point-history-table');
                 tbody.innerHTML = '<tr class="table-row"><td colspan="4" class="text-center text-slate-400 py-6">ກໍາລັງໂຫຼດ...</td></tr>';
-                fetch(`actions/get_point_history.php?cus_id=${cusId}`)
+                fetch(`actions/pos/get_point_history.php?cus_id=${cusId}`)
                 .then(r => r.json())
                 .then(result => {
                     if (!result.success || result.logs.length === 0) {
@@ -2055,7 +2055,7 @@
                 const pts   = parseInt(document.getElementById('adjust-points').value) || 0;
                 const note  = document.getElementById('adjust-note').value.trim() || 'ປັບຄ່ານວນໂດຍ Admin';
                 if (!cusId || pts === 0) { this.showToast('ກະລຸນາລະບຸຈໍານວນຄະແນນ', 'error'); return; }
-                fetch('actions/adjust_points.php', {
+                fetch('actions/pos/adjust_points.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cus_id: cusId, points: pts, note })
@@ -2095,7 +2095,7 @@
             },
 
             loadStockAlert: function() {
-                fetch('actions/get_stock_report.php')
+                fetch('actions/reports/get_stock_report.php')
                 .then(r => r.json())
                 .then(result => {
                     if (!result.success) return;
@@ -2221,8 +2221,8 @@
                 tbody.innerHTML = '<tr class="table-row"><td colspan="5" class="text-center text-slate-400 py-6">ກໍາລັງໂຫຼດ...</td></tr>';
                 const d = date || new Date().toISOString().split('T')[0];
                 const exportBtn = document.getElementById('export-daily-sales-btn');
-                if (exportBtn) exportBtn.href = `actions/export_daily_sales_csv.php?date=${d}`;
-                fetch(`actions/get_daily_sales.php?date=${d}`)
+                if (exportBtn) exportBtn.href = `actions/reports/export_daily_sales_csv.php?date=${d}`;
+                fetch(`actions/reports/get_daily_sales.php?date=${d}`)
                 .then(r => r.json())
                 .then(result => {
                     const totalEl = document.getElementById('daily-sales-total');
@@ -2250,7 +2250,7 @@
                 const tbody = document.getElementById('stock-report-table');
                 if (!tbody) return;
                 tbody.innerHTML = '<tr class="table-row"><td colspan="5" class="text-center text-slate-400 py-6">ກໍາລັງໂຫຼດ...</td></tr>';
-                fetch('actions/get_stock_report.php')
+                fetch('actions/reports/get_stock_report.php')
                 .then(r => r.json())
                 .then(result => {
                     const lowEl = document.getElementById('stock-low-count');
